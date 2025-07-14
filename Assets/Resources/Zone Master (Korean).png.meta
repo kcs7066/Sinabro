@@ -1,0 +1,200 @@
+fileFormatVersion: 2
+guid: 350757b7283a02445a3f172883921ba4
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 6015645861331103655
+    second: Zone Master (Korean)_0
+  - first:
+      213: -5340344242490682966
+    second: Zone Master (Korean)_1
+  - first:
+      213: 5209422164936922165
+    second: Zone Master (Korean)_2
+  - first:
+      213: 6459490206023467810
+    second: Zone Master (Korean)_3
+  - first:
+      213: 1818762479644863128
+    second: Zone Master (Korean)_4
+  - first:
+      213: -7967191305700239467
+    second: Zone Master (Korean)_5
+  - first:
+      213: 5187389886957970391
+    second: Zone Master (Korean)_6
+  - first:
+      213: 6879583589622910485
+    second: Zone Master (Korean)_7
+  - first:
+      213: 6389903103080226909
+    second: Zone Master (Korean)_8
+  - first:
+      213: -2000253218218384085
+    second: Zone Master (Korean)_9
+  - first:
+      213: 3309731697010762238
+    second: Zone Master (Korean)_10
+  - first:
+      213: -8462613479949488528
+    second: Zone Master (Korean)_11
+  - first:
+      213: 5183558030908688538
+    second: Zone Master (Korean)_12
+  - first:
+      213: -1350403218370767845
+    second: Zone Master (Korean)_13
+  - first:
+      213: -6773706753468009842
+    second: Zone Master (Korean)_14
+  - first:
+      213: -7815411080445079841
+    second: Zone Master (Korean)_15
+  - first:
+      213: -5537855969522610612
+    second: Zone Master (Korean)_16
+  - first:
+      213: -6910596612616240550
+    second: Zone Master (Korean)_17
+  - first:
+      213: -7735826779828334251
+    second: Zone Master (Korean)_18
+  - first:
+      213: -4751698493133452121
+    second: Zone Master (Korean)_19
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Zone Master (Korean)_2
+      rect:
+        serializedVersion: 2
+        x: 576
+        y: 432
+        width: 84
+        height: 61
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5349c1abbd59b4840800000000000000
+      internalID: 5209422164936922165
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 6b75152673383ce4eae4f1053d6bf718
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Zone Master (Korean)_2: 5209422164936922165
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

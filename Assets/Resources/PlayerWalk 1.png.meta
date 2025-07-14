@@ -1,31 +1,31 @@
 fileFormatVersion: 2
-guid: 50dbbbd57607f4b40ae085ba3ad344e5
+guid: 1443f4c0ec086284a8b4c6647948ceb6
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -5324690254496497368
-    second: FighterSpritesMWalking-ezgif.com-gif-to-sprite-converter_0
+      213: -7822187939112308718
+    second: PlayerWalk 1_0
   - first:
-      213: -77856314554489121
-    second: FighterSpritesMWalking-ezgif.com-gif-to-sprite-converter_1
+      213: -3860411240149639480
+    second: PlayerWalk 1_1
   - first:
-      213: 1510696165224803372
-    second: FighterSpritesMWalking-ezgif.com-gif-to-sprite-converter_2
+      213: -2851022175566793745
+    second: PlayerWalk 1_2
   - first:
-      213: 2152672725516483562
-    second: FighterSpritesMWalking-ezgif.com-gif-to-sprite-converter_3
+      213: -6924112905436546886
+    second: PlayerWalk 1_3
   - first:
-      213: -2528084990382619646
-    second: FighterSpritesMWalking-ezgif.com-gif-to-sprite-converter_4
+      213: -1405881653860582592
+    second: PlayerWalk 1_4
   - first:
-      213: 556244769260970211
-    second: FighterSpritesMWalking-ezgif.com-gif-to-sprite-converter_5
+      213: -4593310615049210041
+    second: PlayerWalk 1_5
   - first:
-      213: -3039270124899552050
-    second: FighterSpritesMWalking-ezgif.com-gif-to-sprite-converter_6
+      213: 4034947554697636129
+    second: PlayerWalk 1_6
   - first:
-      213: -886337423419235211
-    second: FighterSpritesMWalking-ezgif.com-gif-to-sprite-converter_7
+      213: 450201448223967247
+    second: PlayerWalk 1_7
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -121,12 +121,12 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: FighterSpritesMWalking-ezgif.com-gif-to-sprite-converter_0
+      name: PlayerWalk 1_0
       rect:
         serializedVersion: 2
-        x: 41
+        x: 13
         y: 111
-        width: 50
+        width: 78
         height: 91
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -136,19 +136,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 82180c9cc66ea16b0800000000000000
-      internalID: -5324690254496497368
+      spriteID: 210bdda5381027390800000000000000
+      internalID: -7822187939112308718
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FighterSpritesMWalking-ezgif.com-gif-to-sprite-converter_1
+      name: PlayerWalk 1_1
       rect:
         serializedVersion: 2
-        x: 181
+        x: 150
         y: 112
-        width: 52
+        width: 83
         height: 89
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -158,19 +158,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: fd6657b28166beef0800000000000000
-      internalID: -77856314554489121
+      spriteID: 8ce94ff2e601d6ac0800000000000000
+      internalID: -3860411240149639480
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FighterSpritesMWalking-ezgif.com-gif-to-sprite-converter_2
+      name: PlayerWalk 1_2
       rect:
         serializedVersion: 2
-        x: 323
+        x: 297
         y: 112
-        width: 52
+        width: 78
         height: 88
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -180,19 +180,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c2ce4c3882217f410800000000000000
-      internalID: 1510696165224803372
+      spriteID: fe3749acf622f68d0800000000000000
+      internalID: -2851022175566793745
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FighterSpritesMWalking-ezgif.com-gif-to-sprite-converter_3
+      name: PlayerWalk 1_3
       rect:
         serializedVersion: 2
-        x: 467
+        x: 444
         y: 113
-        width: 50
+        width: 73
         height: 88
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -202,19 +202,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: aebf4124074dfdd10800000000000000
-      internalID: 2152672725516483562
+      spriteID: ab8b1ce7ffb98ef90800000000000000
+      internalID: -6924112905436546886
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FighterSpritesMWalking-ezgif.com-gif-to-sprite-converter_4
+      name: PlayerWalk 1_4
       rect:
         serializedVersion: 2
-        x: 607
+        x: 590
         y: 112
-        width: 52
+        width: 73
         height: 90
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -224,19 +224,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 2044f3a78107aecd0800000000000000
-      internalID: -2528084990382619646
+      spriteID: 04bb661a51e4d7ce0800000000000000
+      internalID: -1405881653860582592
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FighterSpritesMWalking-ezgif.com-gif-to-sprite-converter_5
+      name: PlayerWalk 1_5
       rect:
         serializedVersion: 2
-        x: 39
+        x: 25
         y: 7
-        width: 57
+        width: 73
         height: 89
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -246,19 +246,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 3e028f7abad28b700800000000000000
-      internalID: 556244769260970211
+      spriteID: 747f5fef4584140c0800000000000000
+      internalID: -4593310615049210041
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FighterSpritesMWalking-ezgif.com-gif-to-sprite-converter_6
+      name: PlayerWalk 1_6
       rect:
         serializedVersion: 2
-        x: 181
+        x: 163
         y: 6
-        width: 52
+        width: 73
         height: 88
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -268,19 +268,19 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ec4b7e49ce752d5d0800000000000000
-      internalID: -3039270124899552050
+      spriteID: 12965154c630ff730800000000000000
+      internalID: 4034947554697636129
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FighterSpritesMWalking-ezgif.com-gif-to-sprite-converter_7
+      name: PlayerWalk 1_7
       rect:
         serializedVersion: 2
-        x: 325
+        x: 302
         y: 6
-        width: 50
+        width: 73
         height: 90
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -290,8 +290,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 57426f53fc813b3f0800000000000000
-      internalID: -886337423419235211
+      spriteID: f0881c6f4df6f3600800000000000000
+      internalID: 450201448223967247
       vertices: []
       indices: 
       edges: []
@@ -309,15 +309,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      FighterSpritesMWalking-ezgif.com-gif-to-sprite-converter_0: -5324690254496497368
-      FighterSpritesMWalking-ezgif.com-gif-to-sprite-converter_1: -77856314554489121
-      FighterSpritesMWalking-ezgif.com-gif-to-sprite-converter_2: 1510696165224803372
-      FighterSpritesMWalking-ezgif.com-gif-to-sprite-converter_3: 2152672725516483562
-      FighterSpritesMWalking-ezgif.com-gif-to-sprite-converter_4: -2528084990382619646
-      FighterSpritesMWalking-ezgif.com-gif-to-sprite-converter_5: 556244769260970211
-      FighterSpritesMWalking-ezgif.com-gif-to-sprite-converter_6: -3039270124899552050
-      FighterSpritesMWalking-ezgif.com-gif-to-sprite-converter_7: -886337423419235211
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -7,39 +7,27 @@ public class CharacterStats : MonoBehaviour
     public int MaxHP = 100;
     public int CurrentHP = 100;
     public int AttackPower = 10;
+    public float AttackRange = 1.5f; // 공격 사거리
+    public float AttackCooldown = 1f; // 공격 딜레이
 
-    //[Header("경험치")]
-    //public int currentExp = 0;
-    //public int expToNextLevel = 100;
-
-    // 공격 처리 예시
     public void TakeDamage(int damage)
     {
         CurrentHP -= damage;
         CurrentHP = Mathf.Clamp(CurrentHP, 0, MaxHP);
         Debug.Log($"{gameObject.name}이(가) {damage} 피해를 입음. 현재 HP: {CurrentHP}");
+
+        if (CurrentHP <= 0)
+        {
+            Die();
+
+        }
+    }
+    private void Die()
+    {
+        Debug.Log($"{gameObject.name}이(가) 쓰러졌습니다.");
+        // 여기에 사망 애니메이션, 아이템 드랍, 오브젝트 파괴 등 로직 추가
+        // 예시: 2초 뒤에 오브젝트 비활성화
+        gameObject.SetActive(false);
     }
 
-    //// 레벨업 처리 예시
-    //public void GainExp(int exp)
-    //{
-    //    currentExp += exp;
-    //    while (currentExp >= expToNextLevel)
-    //    {
-    //        currentExp -= expToNextLevel;
-    //        LevelUp();
-    //    }
-    //}
-
-    //void LevelUp()
-    //{
-    //    Level++;
-    //    MaxHP += 20;
-    //    AttackPower += 5;
-    //    CurrentHP = MaxHP;
-
-    //    expToNextLevel = Mathf.RoundToInt(expToNextLevel * 1.2f);
-
-    //    Debug.Log($"레벨업! 현재 레벨: {Level}, HP: {MaxHP}, 공격력: {AttackPower}");
-    //}
 }

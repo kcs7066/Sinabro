@@ -1,31 +1,31 @@
 fileFormatVersion: 2
-guid: 8b5e679f3533d5c49bd93cc3c4f608a6
+guid: 5804d103388250940884cd3d905b07c9
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -8414541366688726106
-    second: FighterSpritesMIdle-ezgif.com-gif-to-sprite-converter_0
+      213: 1149504591772081454
+    second: PlayerIdle 1_0
   - first:
-      213: -8581838223056834101
-    second: FighterSpritesMIdle-ezgif.com-gif-to-sprite-converter_1
+      213: -7967027020724684115
+    second: PlayerIdle 1_1
   - first:
-      213: -7216354944757962218
-    second: FighterSpritesMIdle-ezgif.com-gif-to-sprite-converter_2
+      213: -2735057326762903800
+    second: PlayerIdle 1_2
   - first:
-      213: 3980049484031867751
-    second: FighterSpritesMIdle-ezgif.com-gif-to-sprite-converter_3
+      213: 6882254211664060886
+    second: PlayerIdle 1_3
   - first:
-      213: 2400430472115668541
-    second: FighterSpritesMIdle-ezgif.com-gif-to-sprite-converter_4
+      213: -5934274143276807923
+    second: PlayerIdle 1_4
   - first:
-      213: -3570892603157691860
-    second: FighterSpritesMIdle-ezgif.com-gif-to-sprite-converter_5
+      213: 7285495535010188980
+    second: PlayerIdle 1_5
   - first:
-      213: 967312852527111219
-    second: FighterSpritesMIdle-ezgif.com-gif-to-sprite-converter_6
+      213: 1288036789961603391
+    second: PlayerIdle 1_6
   - first:
-      213: 3086810908096036775
-    second: FighterSpritesMIdle-ezgif.com-gif-to-sprite-converter_7
+      213: 6881075851964198605
+    second: PlayerIdle 1_7
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -121,12 +121,12 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: FighterSpritesMIdle-ezgif.com-gif-to-sprite-converter_0
+      name: PlayerIdle 1_0
       rect:
         serializedVersion: 2
-        x: 39
+        x: 16
         y: 141
-        width: 50
+        width: 74
         height: 93
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -134,164 +134,164 @@ TextureImporter:
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 6a340ba853b893b80800000000000000
-      internalID: -8414541366688726106
+      spriteID: d03272f058cf4c4428907ae2fbd5a457
+      internalID: 1375117721
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FighterSpritesMIdle-ezgif.com-gif-to-sprite-converter_1
+      name: PlayerIdle 1_1
       rect:
         serializedVersion: 2
-        x: 158
-        y: 140
-        width: 52
-        height: 95
+        x: 136
+        y: 141
+        width: 74
+        height: 93
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: bc1f3daca9f27e880800000000000000
-      internalID: -8581838223056834101
+      spriteID: bc81686cd15edc14a869ec16bd890401
+      internalID: -634763397
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FighterSpritesMIdle-ezgif.com-gif-to-sprite-converter_2
+      name: PlayerIdle 1_2
       rect:
         serializedVersion: 2
-        x: 278
-        y: 140
-        width: 52
-        height: 95
+        x: 256
+        y: 141
+        width: 75
+        height: 93
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 61a6190696b5adb90800000000000000
-      internalID: -7216354944757962218
+      spriteID: 59c80e268768c664aa1bd7ce2404aff8
+      internalID: 2145824433
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FighterSpritesMIdle-ezgif.com-gif-to-sprite-converter_3
+      name: PlayerIdle 1_3
       rect:
         serializedVersion: 2
-        x: 398
-        y: 140
-        width: 52
-        height: 95
+        x: 375
+        y: 141
+        width: 76
+        height: 93
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 2, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 76b32342be9fb3730800000000000000
-      internalID: 3980049484031867751
+      spriteID: 310dc988d71fcf94d833d8f59d341307
+      internalID: -860701542
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FighterSpritesMIdle-ezgif.com-gif-to-sprite-converter_4
+      name: PlayerIdle 1_4
       rect:
         serializedVersion: 2
-        x: 518
-        y: 140
-        width: 52
-        height: 95
+        x: 495
+        y: 141
+        width: 76
+        height: 93
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 3, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: d364a7edbca005120800000000000000
-      internalID: 2400430472115668541
+      spriteID: f9cf31624a143504c931ba3409775be5
+      internalID: -1806366725
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FighterSpritesMIdle-ezgif.com-gif-to-sprite-converter_5
+      name: PlayerIdle 1_5
       rect:
         serializedVersion: 2
-        x: 38
-        y: 10
-        width: 52
-        height: 95
+        x: 14
+        y: 11
+        width: 78
+        height: 93
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 4, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: c2247b9c814a17ec0800000000000000
-      internalID: -3570892603157691860
+      spriteID: 43f2f39740d95014ab47be4ecaf8e3db
+      internalID: 1059581822
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FighterSpritesMIdle-ezgif.com-gif-to-sprite-converter_6
+      name: PlayerIdle 1_6
       rect:
         serializedVersion: 2
-        x: 158
-        y: 10
-        width: 52
-        height: 95
+        x: 135
+        y: 11
+        width: 76
+        height: 93
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 2, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 33c5c811ae59c6d00800000000000000
-      internalID: 967312852527111219
+      spriteID: c88a154cab8a7d842aa2b0ce6b68d6e6
+      internalID: 507555562
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: FighterSpritesMIdle-ezgif.com-gif-to-sprite-converter_7
+      name: PlayerIdle 1_7
       rect:
         serializedVersion: 2
-        x: 278
-        y: 10
-        width: 52
-        height: 95
+        x: 256
+        y: 11
+        width: 75
+        height: 93
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 1, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 7af7dd19a2e86da20800000000000000
-      internalID: 3086810908096036775
+      spriteID: a05e1849efbcbd84a99d2788b1ba576a
+      internalID: -1136684347
       vertices: []
       indices: 
       edges: []
@@ -300,7 +300,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: dc53077ea8f3e354fbd6c832c61ed2ba
+    spriteID: 7c6c0b16337748b41bd007dba995f341
     internalID: 0
     vertices: []
     indices: 
@@ -308,16 +308,18 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      FighterSpritesMIdle-ezgif.com-gif-to-sprite-converter_0: -8414541366688726106
-      FighterSpritesMIdle-ezgif.com-gif-to-sprite-converter_1: -8581838223056834101
-      FighterSpritesMIdle-ezgif.com-gif-to-sprite-converter_2: -7216354944757962218
-      FighterSpritesMIdle-ezgif.com-gif-to-sprite-converter_3: 3980049484031867751
-      FighterSpritesMIdle-ezgif.com-gif-to-sprite-converter_4: 2400430472115668541
-      FighterSpritesMIdle-ezgif.com-gif-to-sprite-converter_5: -3570892603157691860
-      FighterSpritesMIdle-ezgif.com-gif-to-sprite-converter_6: 967312852527111219
-      FighterSpritesMIdle-ezgif.com-gif-to-sprite-converter_7: 3086810908096036775
+      PlayerIdle 1_0: 1375117721
+      PlayerIdle 1_1: -634763397
+      PlayerIdle 1_2: 2145824433
+      PlayerIdle 1_3: -860701542
+      PlayerIdle 1_4: -1806366725
+      PlayerIdle 1_5: 1059581822
+      PlayerIdle 1_6: 507555562
+      PlayerIdle 1_7: -1136684347
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
