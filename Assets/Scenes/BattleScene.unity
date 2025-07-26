@@ -522,7 +522,7 @@ GameObject:
   - component: {fileID: 2120260469}
   - component: {fileID: 2120260468}
   m_Layer: 0
-  m_Name: Lawn Green - Soldier Way_0
+  m_Name: BackGroundImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

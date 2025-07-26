@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 
 public class PlayerAnimator : MonoBehaviour
 {
@@ -13,18 +13,18 @@ public class PlayerAnimator : MonoBehaviour
 
     void Update()
     {
-        // PlayerMovementÀÇ »óÅÂ¿¡ µû¶ó 'IsWalk' ÆÄ¶ó¹ÌÅÍ Á¦¾î
+        // PlayerMovementì˜ ìƒíƒœì— ë”°ë¼ 'IsWalk' íŒŒë¼ë¯¸í„° ì œì–´
         animator.SetBool("IsWalk", playerMovement.IsMoving);
 
-        // ÀÌµ¿ ¹æÇâ¿¡ µû¶ó Ä³¸¯ÅÍ ÁÂ¿ì ¹İÀü
+        // ì´ë™ ë°©í–¥ì— ë”°ë¼ ìºë¦­í„° ì¢Œìš° ë°˜ì „
         Vector3 direction = playerMovement.TargetPosition - transform.position;
-        if (direction.x > 0.01f) // ¿À¸¥ÂÊ
+        if (direction.x > 0.01f) // ì˜¤ë¥¸ìª½
         {
-            transform.localScale = new Vector3(-2, 2, 1); // XÃà ½ºÄÉÀÏ¸¸ -1·Î
+            transform.localScale = new Vector3(-2, 2, 1); // Xì¶• ìŠ¤ì¼€ì¼ë§Œ -1ë¡œ
         }
-        else if (direction.x < -0.01f) // ¿ŞÂÊ
+        else if (direction.x < -0.01f) // ì™¼ìª½
         {
-            transform.localScale = new Vector3(2, 2, 1); // ±âº»°ª
+            transform.localScale = new Vector3(2, 2, 1); // ê¸°ë³¸ê°’
         }
     }
 }

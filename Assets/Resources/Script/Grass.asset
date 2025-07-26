@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62ed60c2eaa3f6841a908b7286067091, type: 3}
   m_Name: Grass
   m_EditorClassIdentifier: 
-  itemName: 
-  itemIcon: {fileID: 0}
-  description: 
+  itemName: "\uD480"
+  itemIcon: {fileID: 4922129727203702521, guid: 4d7641d09b8442e4585d2bb2991a8d53, type: 3}
+  description: "\uCD08 \uB4DC\uB78D\uD15C"
