@@ -134,7 +134,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Ribi Town_0: -1575404894711672410
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

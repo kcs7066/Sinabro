@@ -30,6 +30,11 @@ public class MonsterWanderAI : MonoBehaviour
 
     private Animator animator; // Animator 컴포넌트 참조
 
+    // ▼▼▼ 사운드 관련 변수 추가 ▼▼▼
+    private AudioSource audioSource;
+    public AudioClip attackSound;
+    // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
 
     void Start()
     {
@@ -49,6 +54,8 @@ public class MonsterWanderAI : MonoBehaviour
         // --- ▲ 경계 계산 끝 ▲ ---
 
         SetNewRandomDestination();
+
+        audioSource = GetComponent<AudioSource>(); // Audio Source 컴포넌트 가져오기
     }
 
     void Update()
@@ -64,6 +71,17 @@ public class MonsterWanderAI : MonoBehaviour
                 break;
         }
 
+        // --- ▼ 방향에 따른 좌우 반전 로직 추가 ▼ ---
+        if (currentState == MonsterState.Wander)
+        {
+            FlipSprite(targetPosition);
+        }
+        else if (currentState == MonsterState.ChaseAndAttack && playerTarget != null)
+        {
+            FlipSprite(playerTarget.position);
+        }
+        // --- ▲ 로직 끝 ▲ ---
+
         // --- ▼ 이동 후, 최종 위치를 경계 안으로 제한 ▼ ---
         // 어떤 상태이든, 이동이 끝난 후에는 항상 몬스터의 위치를 경계 안에 있도록 강제합니다.
         Vector3 clampedPosition = transform.position;
@@ -71,6 +89,24 @@ public class MonsterWanderAI : MonoBehaviour
         clampedPosition.y = Mathf.Clamp(clampedPosition.y, minBounds.y, maxBounds.y);
         transform.position = clampedPosition;
         // --- ▲ 최종 위치 제한 끝 ▲ ---
+    }
+
+    // --- ▼ 좌우 반전 함수 추가 ▼ ---
+    void FlipSprite(Vector3 target)
+    {
+        // 현재 x 스케일의 절대값을 저장 (원래 크기 유지)
+        float xScale = Mathf.Abs(transform.localScale.x);
+
+        if (target.x > transform.position.x)
+        {
+            // 목표가 오른쪽에 있으면 오른쪽 보기 (x 스케일을 양수로)
+            transform.localScale = new Vector3(-xScale, transform.localScale.y, transform.localScale.z);
+        }
+        else if (target.x < transform.position.x)
+        {
+            // 목표가 왼쪽에 있으면 왼쪽 보기 (x 스케일을 음수로)
+            transform.localScale = new Vector3(xScale, transform.localScale.y, transform.localScale.z);
+        }
     }
 
     // 평소: 배회하기
@@ -108,6 +144,14 @@ public class MonsterWanderAI : MonoBehaviour
             if (Time.time >= lastAttackTime + myStats.AttackCooldown)
             {
                 animator.SetTrigger("DoAttack");
+
+                // ▼▼▼ 공격 사운드 재생 코드 추가 ▼▼▼
+                if (attackSound != null)
+                {
+                    audioSource.PlayOneShot(attackSound);
+                }
+                // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
                 Debug.Log($"{name}이(가) {playerTarget.name}을(를) 반격!");
                 playerTarget.GetComponent<CharacterStats>().TakeDamage(myStats.AttackPower);
                 lastAttackTime = Time.time;

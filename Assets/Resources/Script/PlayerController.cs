@@ -10,10 +10,15 @@ public class PlayerController : MonoBehaviour
     private PlayerMovement playerMovement;
     private CharacterStats myStats; // 자신의 스탯 정보
     private Animator animator; // Animator 컴포넌트 참조
+    private Inventory inventory; // 인벤토리 컴포넌트 참조
 
     private Transform currentTarget; // 현재 추적/공격 중인 대상
     private float lastAttackTime; // 마지막 공격 시간
 
+    private AudioSource audioSource;
+    public AudioClip pickupSound; // 사운드 관련 변수 추가
+    public AudioClip attackSound;
+  
 
     void Awake()
     {
@@ -37,6 +42,8 @@ public class PlayerController : MonoBehaviour
         playerMovement = GetComponent<PlayerMovement>();
         myStats = GetComponent<CharacterStats>();
         animator = GetComponent<Animator>(); // Animator 연결
+        inventory = GetComponent<Inventory>(); // Inventory 연결
+        audioSource = GetComponent<AudioSource>(); // Audio Source 컴포넌트 가져오기
     }
 
     void Update()
@@ -49,17 +56,35 @@ public class PlayerController : MonoBehaviour
             {
                 currentTarget = playerInput.CombatTarget;
             }
+            else if (playerInput.PickupTarget != null)
+            {
+                PickupItem(playerInput.PickupTarget);
+                // 아이템을 주웠을 땐 타겟을 초기화하여 불필요한 움직임을 막음
+                currentTarget = null;
+            }
             // 1-2. 바닥을 클릭했다면 (이동)
             else
             {
                 currentTarget = null; // 타겟 해제
                 playerMovement.MoveTo(playerInput.TargetPosition);
             }
+
         }
 
         // 2. 공격 대상이 있다면
         if (currentTarget != null)
         {
+            // ▼▼▼ 대상의 생사 여부 확인 코드 추가 ▼▼▼
+            CharacterStats targetStats = currentTarget.GetComponent<CharacterStats>();
+            // 만약 타겟이 죽었다면, currentTarget을 null로 만들고 더 이상 처리하지 않음
+            if (targetStats != null && targetStats.CurrentHP <= 0)
+            {
+                currentTarget = null;
+                playerMovement.MoveTo(transform.position); // 제자리에 멈추기
+                return;
+            }
+            // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
             float distance = Vector3.Distance(transform.position, currentTarget.position);
 
             // 2-1. 사거리 밖이면, 대상에게 이동
@@ -89,6 +114,14 @@ public class PlayerController : MonoBehaviour
             {
                 Debug.Log($"{name}이(가) {target.name}을(를) 공격!");
                 animator.SetTrigger("DoAttack");
+
+                // ▼▼▼ 공격 사운드 재생 코드 추가 ▼▼▼
+                if (attackSound != null)
+                {
+                    audioSource.PlayOneShot(attackSound);
+                }
+                // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
                 targetStats.TakeDamage(myStats.AttackPower);
 
                 // 공격한 대상이 몬스터라면, 몬스터에게 공격받았다고 알려주기
@@ -100,6 +133,25 @@ public class PlayerController : MonoBehaviour
             }
         }
 
+        void PickupItem(Transform itemTransform)
+        {
+            FieldItem fieldItem = itemTransform.GetComponent<FieldItem>();
+            if (fieldItem != null)
+            {
+                // ▼▼▼ 아이템 줍는 사운드 재생 코드 추가 ▼▼▼
+                if (pickupSound != null)
+                {
+                    audioSource.PlayOneShot(pickupSound);
+                }
+                // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
+                Debug.Log($"{fieldItem.itemData.itemName}을(를) 주웠습니다.");
+                // 인벤토리에 아이템 추가
+                inventory.AddItem(fieldItem.itemData);
+                // 필드에 떨어진 아이템 오브젝트 파괴
+                Destroy(itemTransform.gameObject);
+            }
+        }
 
     }
 }
