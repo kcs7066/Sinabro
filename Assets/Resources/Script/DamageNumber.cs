@@ -12,11 +12,6 @@ public class DamageNumber : MonoBehaviour
     public float moveSpeed = 2f;
     public float fadeDuration = 1f;
 
-    void Start()
-    {
-        // 테스트를 위해 게임 시작 시 123이라는 숫자를 강제로 표시
-        Setup(123);
-    }
 
     // 데미지 값을 설정하고 숫자 스프라이트를 생성하는 함수
     public void Setup(int damage)

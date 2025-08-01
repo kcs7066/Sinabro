@@ -202,7 +202,7 @@ MonoBehaviour:
   - item: {fileID: 11400000, guid: 947cae977f0d54e479de934e83eb8f46, type: 2}
     dropChance: 50
   deathSound: {fileID: 8300000, guid: 305f6ffe5b771db49a921e736a55dbd4, type: 3}
-  damageTextPrefab: {fileID: 0}
+  damageTextPrefab: {fileID: 6241919564894348762, guid: a04e25c8266e3c34aaa805d4739d7ef9, type: 3}
   damageTextSpawnPoint: {fileID: 0}
 --- !u!82 &-493729967373480906
 AudioSource:
