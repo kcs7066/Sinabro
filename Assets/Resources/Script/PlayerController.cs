@@ -18,7 +18,11 @@ public class PlayerController : MonoBehaviour
     private AudioSource audioSource;
     public AudioClip pickupSound; // 사운드 관련 변수 추가
     public AudioClip attackSound;
-  
+
+    [Header("UI 연결")]
+    public GameObject lootAlertPrefab;      // 1단계에서 만든 LootAlertItem 프리팹
+    public Transform lootAlertContainer;    // 2단계에서 만든 LootAlertContainer
+
 
     void Awake()
     {
@@ -145,9 +149,19 @@ public class PlayerController : MonoBehaviour
                 }
                 // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
-                Debug.Log($"{fieldItem.itemData.itemName}을(를) 주웠습니다.");
                 // 인벤토리에 아이템 추가
                 inventory.AddItem(fieldItem.itemData);
+
+                // ▼▼▼ 아이템 획득 알림 생성 ▼▼▼
+                if (lootAlertPrefab != null && lootAlertContainer != null)
+                {
+                    // 알림 오브젝트를 컨테이너의 자식으로 생성
+                    GameObject alert = Instantiate(lootAlertPrefab, lootAlertContainer);
+                    // 알림 오브젝트에 아이템 정보 전달
+                    alert.GetComponent<LootAlertItem>().Setup(fieldItem.itemData);
+                }
+                // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
                 // 필드에 떨어진 아이템 오브젝트 파괴
                 Destroy(itemTransform.gameObject);
             }

@@ -14,4 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: "\uD480"
   itemIcon: {fileID: 4922129727203702521, guid: 4d7641d09b8442e4585d2bb2991a8d53, type: 3}
-  description: "\uCD08 \uB4DC\uB78D\uD15C"
+  description: "\uCD08\uC758 \uBA38\uB9AC\uC5D0\uC11C \uC790\uB77C\uB294 \uD480"
+  maxStack: 99

@@ -44,6 +44,7 @@ public class DungeonUIController : MonoBehaviour
     {
         if (currentSelectedStage != null)
         {
+            ClosePanel();
             SceneManager.LoadScene(currentSelectedStage.sceneToLoad);
         }
         else
