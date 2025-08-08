@@ -14,6 +14,9 @@ public class FieldItem : MonoBehaviour
     private Vector3 initialWorldPosition;
 
     private Rigidbody2D rb; // Rigidbody 참조 변수
+
+    // 아이템이 이미 주워졌는지 확인하는 플래그
+    private bool isPickedUp = false;
     void Awake()
     {
         col = GetComponent<Collider2D>();
@@ -38,6 +41,36 @@ public class FieldItem : MonoBehaviour
 
         // 드롭 애니메이션 시작
         StartCoroutine(DropAnimation());
+
+        // ▼▼▼ 자동 습득 코루틴 시작 ▼▼▼
+        StartCoroutine(AutoPickupAfterDelay(5f));
+    }
+
+
+    // 지정된 시간 뒤에 자동으로 아이템을 줍는 코루틴
+    IEnumerator AutoPickupAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        BePickedUp();
+    }
+
+    // 아이템이 주워졌을 때 호출되는 공개 함수
+    public void BePickedUp()
+    {
+        // 이미 주워졌다면 아무것도 하지 않음 (중복 실행 방지)
+        if (isPickedUp) return;
+        isPickedUp = true;
+
+        // "Player" 태그를 가진 오브젝트를 찾아 Controller 스크립트를 가져옴
+        PlayerController player = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
+        if (player != null)
+        {
+            // 플레이어에게 아이템 획득 로직을 실행하라고 명령
+            player.AcquireItem(itemData);
+        }
+
+        // 아이템 오브젝트 파괴
+        Destroy(gameObject);
     }
 
     IEnumerator DropAnimation()

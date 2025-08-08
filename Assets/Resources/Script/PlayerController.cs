@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
@@ -12,9 +13,6 @@ public class PlayerController : MonoBehaviour
     private Animator animator; // Animator 컴포넌트 참조
     private Inventory inventory; // 인벤토리 컴포넌트 참조
 
-    private Transform currentTarget; // 현재 추적/공격 중인 대상
-    private float lastAttackTime; // 마지막 공격 시간
-
     private AudioSource audioSource;
     public AudioClip pickupSound; // 사운드 관련 변수 추가
     public AudioClip attackSound;
@@ -23,6 +21,16 @@ public class PlayerController : MonoBehaviour
     public GameObject lootAlertPrefab;      // 1단계에서 만든 LootAlertItem 프리팹
     public Transform lootAlertContainer;    // 2단계에서 만든 LootAlertContainer
 
+    // --- 자동 공격 관련 변수 추가 ---
+    [Header("자동 공격 설정")]
+    public GameObject targetArrowPrefab;    // 1단계에서 만든 화살표 프리팹
+    public float arrowYOffset = 1.0f; //  화살표 높이 조절 변수 추가
+    private GameObject currentTargetArrow;  // 생성된 화살표 인스턴스
+    private Transform currentTarget;        // 현재 공격 중인 대상
+    private float lastAttackTime;
+    private float searchInterval = 0.5f;    // 타겟을 찾는 주기 (초)
+    private float lastSearchTime;
+    private bool isAutoAttacking = false;   // 자동 공격 모드 On/Off
 
     void Awake()
     {
@@ -52,66 +60,160 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        // 1. 새로운 클릭이 발생했을 때
-        if (playerInput.IsNewClick)
+        // 테스트용: 'A' 키를 눌러 자동/수동 모드 전환
+        if (Keyboard.current.aKey.wasPressedThisFrame)
         {
-            // 1-1. 공격 대상이 지정되었다면
-            if (playerInput.CombatTarget != null)
+            isAutoAttacking = !isAutoAttacking;
+            if (!isAutoAttacking) // 자동 공격을 끄면 타겟 해제
             {
-                currentTarget = playerInput.CombatTarget;
-            }
-            else if (playerInput.PickupTarget != null)
-            {
-                PickupItem(playerInput.PickupTarget);
-                // 아이템을 주웠을 땐 타겟을 초기화하여 불필요한 움직임을 막음
                 currentTarget = null;
             }
-            // 1-2. 바닥을 클릭했다면 (이동)
-            else
-            {
-                currentTarget = null; // 타겟 해제
-                playerMovement.MoveTo(playerInput.TargetPosition);
-            }
-
+            Debug.Log("자동 공격 모드: " + isAutoAttacking);
         }
 
-        // 2. 공격 대상이 있다면
-        if (currentTarget != null)
+        // 자동 공격 모드일 때
+        if (isAutoAttacking)
         {
-            // ▼▼▼ 대상의 생사 여부 확인 코드 추가 ▼▼▼
-            CharacterStats targetStats = currentTarget.GetComponent<CharacterStats>();
-            // 만약 타겟이 죽었다면, currentTarget을 null로 만들고 더 이상 처리하지 않음
-            if (targetStats != null && targetStats.CurrentHP <= 0)
+            // 일정 시간마다 가장 가까운 몬스터를 찾음
+            if (Time.time >= lastSearchTime + searchInterval)
             {
-                currentTarget = null;
-                playerMovement.MoveTo(transform.position); // 제자리에 멈추기
-                return;
+                FindAndSetNearestMonster();
+                lastSearchTime = Time.time;
             }
-            // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+        }
+        // 수동 모드일 때 (기존 클릭 로직)
+        else
+        {
+            HandleManualInput();
+        }
 
-            float distance = Vector3.Distance(transform.position, currentTarget.position);
+        // 타겟 추적 및 공격 처리 (자동/수동 공통)
+        HandleTargeting();
+        // 화살표 업데이트
+        UpdateTargetArrow();
+    }
 
-            // 2-1. 사거리 밖이면, 대상에게 이동
-            if (distance > myStats.AttackRange)
+
+
+
+        // 수동 입력 처리 함수
+        void HandleManualInput()
+        {
+            // 1. 새로운 클릭이 발생했을 때
+            if (playerInput.IsNewClick)
             {
-                playerMovement.MoveTo(currentTarget.position);
-            }
-            // 2-2. 사거리 안이면, 이동을 멈추고 공격
-            else
-            {
-                // 이동 정지 (현재 위치를 목표로 설정)
-                playerMovement.MoveTo(transform.position);
-
-                // 공격 쿨다운이 지났다면 공격
-                if (Time.time >= lastAttackTime + myStats.AttackCooldown)
+                // 1-1. 공격 대상이 지정되었다면
+                if (playerInput.CombatTarget != null)
                 {
-                    Attack(currentTarget);
-                    lastAttackTime = Time.time;
+                    currentTarget = playerInput.CombatTarget;
+                }
+                else if (playerInput.PickupTarget != null)
+                {
+                    PickupItem(playerInput.PickupTarget);
+                    // 아이템을 주웠을 땐 타겟을 초기화하여 불필요한 움직임을 막음
+                    currentTarget = null;
+                }
+                // 1-2. 바닥을 클릭했다면 (이동)
+                else
+                {
+                    currentTarget = null; // 타겟 해제
+                    playerMovement.MoveTo(playerInput.TargetPosition);
+                }
+
+            }
+        }
+
+        // 타겟팅 및 공격 처리 함수
+        void HandleTargeting()
+        {
+            // 2. 공격 대상이 있다면
+            if (currentTarget != null)
+            {
+                // ▼▼▼ 대상의 생사 여부 확인 코드 추가 ▼▼▼
+                CharacterStats targetStats = currentTarget.GetComponent<CharacterStats>();
+                // 만약 타겟이 죽었다면, currentTarget을 null로 만들고 더 이상 처리하지 않음
+                if (targetStats != null && targetStats.CurrentHP <= 0)
+                {
+                    currentTarget = null;
+                    playerMovement.MoveTo(transform.position); // 제자리에 멈추기
+                    return;
+                }
+                // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
+                float distance = Vector3.Distance(transform.position, currentTarget.position);
+
+                // 2-1. 사거리 밖이면, 대상에게 이동
+                if (distance > myStats.AttackRange)
+                {
+                    playerMovement.MoveTo(currentTarget.position);
+                }
+                // 2-2. 사거리 안이면, 이동을 멈추고 공격
+                else
+                {
+                    // 이동 정지 (현재 위치를 목표로 설정)
+                    playerMovement.MoveTo(transform.position);
+
+                    // 공격 쿨다운이 지났다면 공격
+                    if (Time.time >= lastAttackTime + myStats.AttackCooldown)
+                    {
+                        Attack(currentTarget);
+                        lastAttackTime = Time.time;
+                    }
                 }
             }
         }
 
-        void Attack(Transform target)
+    // 가장 가까운 몬스터를 찾아 타겟으로 설정하는 함수
+    void FindAndSetNearestMonster()
+    {
+        float minDistance = Mathf.Infinity;
+        GameObject nearestMonster = null;
+        var monsterList = MonsterManager.instance.ActiveMonsters;
+
+        foreach (GameObject monster in monsterList)
+        {
+            float distance = Vector3.Distance(transform.position, monster.transform.position);
+            if (distance < minDistance)
+            {
+                minDistance = distance;
+                nearestMonster = monster;
+            }
+        }
+
+        if (nearestMonster != null)
+        {
+            currentTarget = nearestMonster.transform;
+        }
+        else
+        {
+            currentTarget = null; // 몬스터가 없으면 타겟 해제
+        }
+    }
+
+    // 타겟 화살표를 관리하는 함수
+    void UpdateTargetArrow()
+    {
+        if (currentTarget != null)
+        {
+            if (currentTargetArrow == null) // 화살표가 없다면 생성
+            {
+                currentTargetArrow = Instantiate(targetArrowPrefab);
+            }
+            // 화살표를 타겟의 자식으로 만들어 따라다니게 함
+            currentTargetArrow.transform.SetParent(currentTarget, false);
+            currentTargetArrow.transform.localPosition = new Vector3(0, arrowYOffset, 0); // 머리 위로 위치 조정
+        }
+        else
+        {
+            if (currentTargetArrow != null) // 타겟이 없으면 화살표 파괴
+            {
+                Destroy(currentTargetArrow);
+            }
+        }
+    }
+
+
+    void Attack(Transform target)
         {
             CharacterStats targetStats = target.GetComponent<CharacterStats>();
             if (targetStats != null)
@@ -126,7 +228,7 @@ public class PlayerController : MonoBehaviour
                 }
                 // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
-                targetStats.TakeDamage(myStats.AttackPower);
+                targetStats.TakeDamage(myStats.AttackPower, myStats.Level);
 
                 // 공격한 대상이 몬스터라면, 몬스터에게 공격받았다고 알려주기
                 MonsterWanderAI monsterAI = target.GetComponent<MonsterWanderAI>();
@@ -142,30 +244,29 @@ public class PlayerController : MonoBehaviour
             FieldItem fieldItem = itemTransform.GetComponent<FieldItem>();
             if (fieldItem != null)
             {
-                // ▼▼▼ 아이템 줍는 사운드 재생 코드 추가 ▼▼▼
-                if (pickupSound != null)
-                {
-                    audioSource.PlayOneShot(pickupSound);
-                }
-                // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
-
-                // 인벤토리에 아이템 추가
-                inventory.AddItem(fieldItem.itemData);
-
-                // ▼▼▼ 아이템 획득 알림 생성 ▼▼▼
-                if (lootAlertPrefab != null && lootAlertContainer != null)
-                {
-                    // 알림 오브젝트를 컨테이너의 자식으로 생성
-                    GameObject alert = Instantiate(lootAlertPrefab, lootAlertContainer);
-                    // 알림 오브젝트에 아이템 정보 전달
-                    alert.GetComponent<LootAlertItem>().Setup(fieldItem.itemData);
-                }
-                // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
-
-                // 필드에 떨어진 아이템 오브젝트 파괴
-                Destroy(itemTransform.gameObject);
-            }
+            // 이제 FieldItem의 공개 함수를 호출하는 역할만 합니다.
+            fieldItem.BePickedUp();
+        }
+        }
+    public void AcquireItem(ItemData itemData)
+    {
+        // 1. 사운드 재생
+        if (pickupSound != null)
+        {
+            audioSource.PlayOneShot(pickupSound);
         }
 
+        // 2. 인벤토리에 추가
+        inventory.AddItem(itemData);
+
+        // 3. 획득 알림 UI 표시
+        if (lootAlertPrefab != null && lootAlertContainer != null)
+        {
+            GameObject alert = Instantiate(lootAlertPrefab, lootAlertContainer); // 알림 오브젝트를 컨테이너의 자식으로 생성
+            alert.GetComponent<LootAlertItem>().Setup(itemData); // 알림 오브젝트에 아이템 정보 전달
+        }
+
+        Debug.Log($"{itemData.itemName}을(를) (자동)획득했습니다.");
     }
+
 }

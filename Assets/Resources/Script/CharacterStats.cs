@@ -22,6 +22,8 @@ public class CharacterStats : MonoBehaviour
     [Header("드롭 아이템")]
     public GameObject fieldItemPrefab; // 1단계에서 만든 FieldItem 프리팹 연결
     public List<DropItem> dropList = new List<DropItem>();
+    // ▼▼▼ 아이템이 퍼지는 반경 변수 추가 ▼▼▼
+    public float itemDropSpread = 0.5f;
 
     // ▼▼▼ 사운드 및 애니메이션 관련 변수 추가 ▼▼▼
     public AudioClip deathSound;
@@ -40,15 +42,38 @@ public class CharacterStats : MonoBehaviour
         animator = GetComponent<Animator>();
         audioSource = GetComponent<AudioSource>();
         // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+        // Awake 시 HP를 MaxHP로 초기화
+        CurrentHP = MaxHP;
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(int baseDamage, int attackerLevel)
     {
         if (isDead) return; // 이미 죽었다면 피해를 받지 않음
 
-        CurrentHP -= damage;
+        // --- ▼ 레벨 차이 데미지 보정 로직 수정 ▼ ---
+        int levelDifference = attackerLevel - this.Level;
+        float damageModifier;
+
+        if (levelDifference <= -10)
+        {
+            damageModifier = 0f; // 조건 1: 10레벨 이상 낮으면 데미지 0배
+        }
+        else if (levelDifference >= 10)
+        {
+            damageModifier = 2f; // 조건 2: 10레벨 이상 높으면 데미지 2배 고정
+        }
+        else
+        {
+            damageModifier = 1.0f + (levelDifference * 0.1f); // 조건 3: 그 외에는 레벨당 10% 증감
+        }
+        // --- ▲ 로직 끝 ▲ ---
+
+
+        int finalDamage = Mathf.RoundToInt(baseDamage * damageModifier);
+
+        CurrentHP -= finalDamage;
         CurrentHP = Mathf.Clamp(CurrentHP, 0, MaxHP);
-        Debug.Log($"{gameObject.name}이(가) {damage} 피해를 입음. 현재 HP: {CurrentHP}");
+        Debug.Log($"{gameObject.name}이(가) {finalDamage} 피해를 입음. (보정: {damageModifier * 100}%)");
 
         // --- ▼ 데미지 텍스트 생성 로직 추가 ▼ ---
         if (damageTextPrefab != null)
@@ -60,7 +85,7 @@ public class CharacterStats : MonoBehaviour
             GameObject damageTextObj = Instantiate(damageTextPrefab, spawnPos, Quaternion.identity);
 
             // 생성된 텍스트에 데미지 값 전달
-            damageTextObj.GetComponent<DamageNumber>().Setup(damage);
+            damageTextObj.GetComponent<DamageNumber>().Setup(finalDamage);
         }
         // --- ▲ 로직 끝 ▲ ---
 
@@ -75,11 +100,23 @@ public class CharacterStats : MonoBehaviour
         if (isDead) return; // Die 함수가 여러 번 호출되는 것을 방지
         isDead = true;
 
+        // ▼▼▼ 몬스터 매니저에게 사망 사실 알리기 ▼▼▼
+        // 몬스터일 경우에만 매니저를 호출
+        if (gameObject.CompareTag("Monster"))
+        {
+            MonsterManager.instance.OnMonsterDied(gameObject);
+        }
+        // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
         Debug.Log($"{gameObject.name}이(가) 쓰러졌습니다.");
         // 여기에 사망 애니메이션, 아이템 드랍, 오브젝트 파괴 등 로직 추가
 
         // 1. 몬스터의 다른 기능들을 정지 (AI, 충돌 등)
-        GetComponent<Collider2D>().enabled = false;
+        Collider2D[] colliders = GetComponentsInChildren<Collider2D>();
+        foreach (Collider2D col in colliders)
+        {
+            col.enabled = false;
+        }
         if (GetComponent<MonsterWanderAI>() != null)
         {
             GetComponent<MonsterWanderAI>().enabled = false;
@@ -94,8 +131,6 @@ public class CharacterStats : MonoBehaviour
             audioSource.PlayOneShot(deathSound);
         }
 
-        Debug.Log("몬스터 사망 위치: " + transform.position);
-
         // 4. 아이템 드롭
         if (fieldItemPrefab != null && dropList.Count > 0)
         {
@@ -108,9 +143,20 @@ public class CharacterStats : MonoBehaviour
                 // 3. 랜덤 숫자가 아이템의 드롭률보다 낮거나 같으면 드롭 성공!
                 if (randomValue <= dropItem.dropChance)
                 {
-                    // 기존과 동일하게 필드 아이템 생성
-                    GameObject droppedItem = Instantiate(fieldItemPrefab, transform.position, Quaternion.identity, null);
-                    droppedItem.GetComponent<FieldItem>().Setup(dropItem.item, transform.position);
+                    // ▼▼▼ 아이템 생성 위치에 무작위 오프셋 추가 ▼▼▼
+
+                    // 1. 몬스터 위치를 기준으로 무작위 오프셋 계산
+                    // Random.insideUnitCircle은 반지름 1짜리 원 안의 랜덤한 위치를 반환합니다.
+                    Vector2 randomOffset = Random.insideUnitCircle * itemDropSpread;
+                    Vector3 spawnPosition = transform.position + new Vector3(randomOffset.x, randomOffset.y, 0);
+
+                    // 2. 계산된 위치에 아이템 생성
+                    GameObject droppedItem = Instantiate(fieldItemPrefab, spawnPosition, Quaternion.identity, null);
+
+                    // 3. Setup 함수에도 동일한 최종 위치를 전달
+                    droppedItem.GetComponent<FieldItem>().Setup(dropItem.item, spawnPosition);
+
+                    // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
                 }
             }
         }

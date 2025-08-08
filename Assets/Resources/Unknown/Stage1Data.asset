@@ -17,3 +17,5 @@ MonoBehaviour:
   monsterSprite: {fileID: 470995675, guid: 1080e3dfe9a089a4bb4638e054b822a4, type: 3}
   dropList:
   - {fileID: 11400000, guid: 947cae977f0d54e479de934e83eb8f46, type: 2}
+  monsterPrefab: {fileID: 7005821964633646108, guid: 1994b48d7a0a25d44af100fa62873a38, type: 3}
+  monsterCount: 5

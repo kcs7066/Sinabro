@@ -18,12 +18,8 @@ public class DamageNumber : MonoBehaviour
     {
         string damageString = damage.ToString();
 
-        Debug.Log("표시할 숫자: " + damageString); // 로그 1: 전체 숫자 확인
-
         foreach (char digitChar in damageString)
         {
-            Debug.Log("현재 숫자: " + digitChar); // 로그 2: 반복문이 몇 번 도는지 확인
-
             // 숫자에 해당하는 스프라이트를 찾아 설정
             int digit = int.Parse(digitChar.ToString());
             Sprite numberSprite = numberSprites[digit];

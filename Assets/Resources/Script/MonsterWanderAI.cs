@@ -153,7 +153,7 @@ public class MonsterWanderAI : MonoBehaviour
                 // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
                 Debug.Log($"{name}이(가) {playerTarget.name}을(를) 반격!");
-                playerTarget.GetComponent<CharacterStats>().TakeDamage(myStats.AttackPower);
+                //playerTarget.GetComponent<CharacterStats>().TakeDamage(myStats.AttackPower);
                 lastAttackTime = Time.time;
             }
         }

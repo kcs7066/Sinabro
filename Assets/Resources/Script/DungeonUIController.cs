@@ -1,7 +1,8 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
 using UnityEngine.SceneManagement;
-using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class DungeonUIController : MonoBehaviour
 {
@@ -34,8 +35,22 @@ public class DungeonUIController : MonoBehaviour
         // 새로운 드롭 아이템 아이콘들 생성
         foreach (ItemData item in stageData.dropList)
         {
-            GameObject icon = Instantiate(itemIconPrefab, dropItemParent);
-            icon.GetComponent<Image>().sprite = item.itemIcon;
+            // 1. 프리팹 생성
+            GameObject slot = Instantiate(itemIconPrefab, dropItemParent);
+
+            // 2. 아이콘 설정 (자식 오브젝트에서 Image 컴포넌트를 찾음)
+            Image iconImage = slot.transform.Find("ItemIcon").GetComponent<Image>();
+            if (iconImage != null)
+            {
+                iconImage.sprite = item.itemIcon;
+            }
+
+            // 3. 텍스트 설정 (자식 오브젝트에서 TextMeshProUGUI 컴포넌트를 찾음)
+            TextMeshProUGUI nameText = slot.transform.Find("ItemNameText").GetComponent<TextMeshProUGUI>();
+            if (nameText != null)
+            {
+                nameText.text = item.itemName;
+            }
         }
     }
 
