@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62ed60c2eaa3f6841a908b7286067091, type: 3}
+  m_Name: necklace_11
+  m_EditorClassIdentifier: 
+  itemName: "\uBAA9\uAC78\uC774"
+  itemIcon: {fileID: 3676262489463328353, guid: f554b6f794a6f994abec4ee67c874fc4, type: 3}
+  description: "1\uD2F0\uC5B4 \uBAA9\uAC78\uC774"
+  maxStack: 1
+  isEquipment: 1
+  equipmentType: 5
+  attackBonus: 0
+  attackspeedBonus: 0
+  levelBonus: 0

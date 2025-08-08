@@ -17,7 +17,20 @@ public class UI_Inventory : MonoBehaviour
         for (int i = 0; i < inventory.slots.Count; i++)
         {
             GameObject newSlot = Instantiate(slotPrefab, slotParent);
-            uiSlots.Add(newSlot.GetComponent<UI_Slot>());
+            UI_Slot uiSlot = newSlot.GetComponent<UI_Slot>();
+
+            // ▼▼▼ 슬롯에 인덱스 정보 및 클릭 이벤트 할당 ▼▼▼
+            uiSlot.slotIndex = i; // 인덱스 저장
+
+            // 버튼 컴포넌트를 가져오거나 추가해서 클릭 이벤트 연결
+            Button btn = newSlot.GetComponent<Button>();
+            if (btn == null) btn = newSlot.AddComponent<Button>();
+
+            // 클릭했을 때 Inventory의 UseItem 함수를 호출하도록 설정
+            btn.onClick.AddListener(() => inventory.UseItem(uiSlot.slotIndex));
+            // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
+            uiSlots.Add(uiSlot);
         }
         // ▼▼▼ UI를 즉시 업데이트하는 코드 추가 ▼▼▼
         UpdateInventoryUI();

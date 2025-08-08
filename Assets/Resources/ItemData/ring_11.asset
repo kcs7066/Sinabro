@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62ed60c2eaa3f6841a908b7286067091, type: 3}
+  m_Name: ring_11
+  m_EditorClassIdentifier: 
+  itemName: "\uBC18\uC9C0"
+  itemIcon: {fileID: 5424774354797298767, guid: a27ccfa41d483d241aa6e52d16ad1a4a, type: 3}
+  description: "1\uD2F0\uC5B4 \uBC18\uC9C0"
+  maxStack: 1
+  isEquipment: 1
+  equipmentType: 7
+  attackBonus: 0
+  attackspeedBonus: 0
+  levelBonus: 0

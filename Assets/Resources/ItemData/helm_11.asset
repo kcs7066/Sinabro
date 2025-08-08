@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62ed60c2eaa3f6841a908b7286067091, type: 3}
+  m_Name: helm_11
+  m_EditorClassIdentifier: 
+  itemName: "\uD22C\uAD6C"
+  itemIcon: {fileID: 387567606258056744, guid: 75a322d008a770143881f9646084c47b, type: 3}
+  description: "1\uD2F0\uC5B4 \uD22C\uAD6C"
+  maxStack: 1
+  isEquipment: 1
+  equipmentType: 1
+  attackBonus: 0
+  attackspeedBonus: 0
+  levelBonus: 0
