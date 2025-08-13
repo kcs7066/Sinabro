@@ -11,11 +11,11 @@ GameObject:
   - component: {fileID: 2336587551548046992}
   - component: {fileID: 6962365442591175376}
   - component: {fileID: 1401000662199196717}
-  - component: {fileID: 7687113273810436092}
   - component: {fileID: 8652722574125369165}
   - component: {fileID: 5795291138631111099}
   - component: {fileID: 2733867469520718694}
   - component: {fileID: 3388548195012073651}
+  - component: {fileID: 5681899868808688536}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -115,24 +115,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &7687113273810436092
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3470177082533757923}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45f6f195ad3c9db478ca6344884ec344, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Level: 0
-  MaxHP: 100
-  CurrentHP: 100
-  AttackPower: 10
-  AttackRange: 1.5
-  AttackCooldown: 1
 --- !u!114 &8652722574125369165
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -145,6 +127,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebf7093ca40192a45896911489ab7ef5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pickupSound: {fileID: 0}
+  attackSound: {fileID: 0}
+  lootAlertPrefab: {fileID: 0}
+  lootAlertContainer: {fileID: 0}
+  targetArrowPrefab: {fileID: 0}
+  arrowYOffset: 1
 --- !u!114 &5795291138631111099
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -182,3 +170,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 5
+--- !u!114 &5681899868808688536
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3470177082533757923}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2602d135171307469375730b314a21c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Level: 0
+  MaxHP: 100
+  CurrentHP: 100
+  baseAttackPower: 10
+  baseAttackSpeed: 1
+  baseAttackRange: 1.5
+  baseMoveSpeed: 5
+  AttackCooldown: 2
+  finalAttackPower: 0
+  finalAttackSpeed: 0
+  finalAttackRange: 0
+  finalMoveSpeed: 0
+  finalItemDropRateBonus: 0
+  damageTextPrefab: {fileID: 6241919564894348762, guid: a04e25c8266e3c34aaa805d4739d7ef9, type: 3}
+  damageTextSpawnPoint: {fileID: 0}

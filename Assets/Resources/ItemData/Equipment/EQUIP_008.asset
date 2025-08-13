@@ -9,15 +9,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62ed60c2eaa3f6841a908b7286067091, type: 3}
-  m_Name: ring_11
+  m_Script: {fileID: 11500000, guid: 8192bf47a6e574b4fafc48772b3affc2, type: 3}
+  m_Name: EQUIP_008
   m_EditorClassIdentifier: 
+  itemID: EQUIP_008
   itemName: "\uBC18\uC9C0"
   itemIcon: {fileID: 5424774354797298767, guid: a27ccfa41d483d241aa6e52d16ad1a4a, type: 3}
   description: "1\uD2F0\uC5B4 \uBC18\uC9C0"
-  maxStack: 1
-  isEquipment: 1
-  equipmentType: 7
-  attackBonus: 0
-  attackspeedBonus: 0
-  levelBonus: 0
+  equipType: 7
+  level: 8
+  attackPower: 9
+  attackSpeed: 10
+  attackRange: 11
+  moveSpeedBonus: 12
+  additionalAttackPower: 13
+  additionalAttackSpeed: 14
+  itemDropRateBonus: 15

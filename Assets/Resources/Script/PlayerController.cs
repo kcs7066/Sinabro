@@ -9,7 +9,7 @@ public class PlayerController : MonoBehaviour
     // 플레이어의 다른 컴포넌트들을 연결할 변수들
     private PlayerInput playerInput;
     private PlayerMovement playerMovement;
-    private CharacterStats myStats; // 자신의 스탯 정보
+    private PlayerStats myStats; // 자신의 스탯 정보
     private Animator animator; // Animator 컴포넌트 참조
     private Inventory inventory; // 인벤토리 컴포넌트 참조
 
@@ -52,7 +52,7 @@ public class PlayerController : MonoBehaviour
         // 자기 자신에게 붙어있는 다른 스크립트들을 자동으로 찾아 연결
         playerInput = GetComponent<PlayerInput>();
         playerMovement = GetComponent<PlayerMovement>();
-        myStats = GetComponent<CharacterStats>();
+        myStats = GetComponent<PlayerStats>();
         animator = GetComponent<Animator>(); // Animator 연결
         inventory = GetComponent<Inventory>(); // Inventory 연결
         audioSource = GetComponent<AudioSource>(); // Audio Source 컴포넌트 가져오기
@@ -143,7 +143,7 @@ public class PlayerController : MonoBehaviour
                 float distance = Vector3.Distance(transform.position, currentTarget.position);
 
                 // 2-1. 사거리 밖이면, 대상에게 이동
-                if (distance > myStats.AttackRange)
+                if (distance > myStats.finalAttackRange)
                 {
                     playerMovement.MoveTo(currentTarget.position);
                 }
@@ -215,7 +215,7 @@ public class PlayerController : MonoBehaviour
 
     void Attack(Transform target)
         {
-            CharacterStats targetStats = target.GetComponent<CharacterStats>();
+        MonsterStats targetStats = target.GetComponent<MonsterStats>();
             if (targetStats != null)
             {
                 Debug.Log($"{name}이(가) {target.name}을(를) 공격!");
@@ -228,7 +228,7 @@ public class PlayerController : MonoBehaviour
                 }
                 // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
-                targetStats.TakeDamage(myStats.AttackPower, myStats.Level);
+                targetStats.TakeDamage(myStats.finalAttackPower, myStats.Level);
 
                 // 공격한 대상이 몬스터라면, 몬스터에게 공격받았다고 알려주기
                 MonsterWanderAI monsterAI = target.GetComponent<MonsterWanderAI>();

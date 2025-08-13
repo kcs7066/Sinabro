@@ -9,15 +9,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62ed60c2eaa3f6841a908b7286067091, type: 3}
-  m_Name: shoes_11
+  m_Script: {fileID: 11500000, guid: 8192bf47a6e574b4fafc48772b3affc2, type: 3}
+  m_Name: EQUIP_005
   m_EditorClassIdentifier: 
+  itemID: EQUIP_005
   itemName: "\uC2E0\uBC1C"
   itemIcon: {fileID: -874277848506762508, guid: 757691c11f23cfc40b8ee38058338680, type: 3}
   description: "1\uD2F0\uC5B4 \uC2E0\uBC1C"
-  maxStack: 1
-  isEquipment: 1
-  equipmentType: 4
-  attackBonus: 0
-  attackspeedBonus: 0
-  levelBonus: 0
+  equipType: 4
+  level: 5
+  attackPower: 6
+  attackSpeed: 7
+  attackRange: 8
+  moveSpeedBonus: 9
+  additionalAttackPower: 10
+  additionalAttackSpeed: 11
+  itemDropRateBonus: 12

@@ -9,15 +9,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 62ed60c2eaa3f6841a908b7286067091, type: 3}
-  m_Name: pants_11
+  m_Script: {fileID: 11500000, guid: 8192bf47a6e574b4fafc48772b3affc2, type: 3}
+  m_Name: EQUIP_004
   m_EditorClassIdentifier: 
+  itemID: EQUIP_004
   itemName: "\uD558\uC758"
   itemIcon: {fileID: 8629841056301197959, guid: 70a9b0f9218f4954bad8bd27d6ab24ec, type: 3}
   description: "1\uD2F0\uC5B4 \uD558\uC758"
-  maxStack: 1
-  isEquipment: 1
-  equipmentType: 3
-  attackBonus: 0
-  attackspeedBonus: 0
-  levelBonus: 0
+  equipType: 3
+  level: 4
+  attackPower: 5
+  attackSpeed: 6
+  attackRange: 7
+  moveSpeedBonus: 8
+  additionalAttackPower: 9
+  additionalAttackSpeed: 10
+  itemDropRateBonus: 11

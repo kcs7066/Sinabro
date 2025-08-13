@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 5164722916917532163}
   - component: {fileID: 4529634842937214536}
   - component: {fileID: 4687013113400405333}
-  - component: {fileID: 1215399677999308604}
   - component: {fileID: -493729967373480906}
   - component: {fileID: 893203776254716062}
+  - component: {fileID: 2683085449857151124}
   m_Layer: 0
   m_Name: TempMob
   m_TagString: Monster
@@ -179,38 +179,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.36, y: 0.37}
   m_EdgeRadius: 0
---- !u!114 &1215399677999308604
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7005821964633646108}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45f6f195ad3c9db478ca6344884ec344, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Level: 10
-  MaxHP: 50
-  CurrentHP: 50
-  AttackPower: 0
-  AttackRange: 1.5
-  AttackCooldown: 1.5
-  fieldItemPrefab: {fileID: 3381199646415574836, guid: a51645b99c6396e478a2f4d73810446a, type: 3}
-  dropList:
-  - item: {fileID: 11400000, guid: 947cae977f0d54e479de934e83eb8f46, type: 2}
-    dropChance: 100
-  - item: {fileID: 11400000, guid: d2a7bb5710729a34d864bb02a5e22eda, type: 2}
-    dropChance: 50
-  - item: {fileID: 11400000, guid: 6edf80f73ca25b64cbc80212a2f8146d, type: 2}
-    dropChance: 100
-  - item: {fileID: 11400000, guid: 672678c04c95aab4886023420afda63f, type: 2}
-    dropChance: 100
-  itemDropSpread: 1
-  deathSound: {fileID: 8300000, guid: 305f6ffe5b771db49a921e736a55dbd4, type: 3}
-  damageTextPrefab: {fileID: 6241919564894348762, guid: a04e25c8266e3c34aaa805d4739d7ef9, type: 3}
-  damageTextSpawnPoint: {fileID: 0}
 --- !u!82 &-493729967373480906
 AudioSource:
   m_ObjectHideFlags: 0
@@ -405,3 +373,35 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &2683085449857151124
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7005821964633646108}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b640b6fcec177244834efde16feb12d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Level: 0
+  MaxHP: 100
+  CurrentHP: 100
+  AttackPower: 0
+  AttackRange: 1.5
+  AttackCooldown: 2
+  fieldItemPrefab: {fileID: 3381199646415574836, guid: a51645b99c6396e478a2f4d73810446a, type: 3}
+  dropList:
+  - item: {fileID: 11400000, guid: 947cae977f0d54e479de934e83eb8f46, type: 2}
+    dropChance: 100
+  - item: {fileID: 11400000, guid: d2a7bb5710729a34d864bb02a5e22eda, type: 2}
+    dropChance: 50
+  - item: {fileID: 11400000, guid: 2b23d313115879046811dfde4c658294, type: 2}
+    dropChance: 100
+  - item: {fileID: 11400000, guid: cdedd34d5d0cd5640b09fc6ec480f437, type: 2}
+    dropChance: 100
+  itemDropSpread: 0.5
+  damageTextPrefab: {fileID: 6241919564894348762, guid: a04e25c8266e3c34aaa805d4739d7ef9, type: 3}
+  damageTextSpawnPoint: {fileID: 0}
+  deathSound: {fileID: 8300000, guid: 305f6ffe5b771db49a921e736a55dbd4, type: 3}

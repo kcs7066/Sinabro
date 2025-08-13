@@ -17,7 +17,7 @@ public class MonsterWanderAI : MonoBehaviour
     public float padding = 1.0f;
 
     // --- 내부 변수들 ---
-    private CharacterStats myStats;
+    private MonsterStats myStats;
     private Transform playerTarget;
     private float lastAttackTime;
 
@@ -38,9 +38,14 @@ public class MonsterWanderAI : MonoBehaviour
 
     void Start()
     {
-        myStats = GetComponent<CharacterStats>();
+        myStats = GetComponent<MonsterStats>();
+
         animator = GetComponent<Animator>(); // Animator 연결
+        audioSource = GetComponent<AudioSource>(); // Audio Source 컴포넌트 가져오기
+
         startPosition = transform.position;
+
+        SetNewRandomDestination();
 
         // --- ▼ 맵 경계 계산 코드 다시 추가 ▼ ---
         Camera mainCamera = Camera.main;
@@ -52,10 +57,6 @@ public class MonsterWanderAI : MonoBehaviour
         maxBounds.x -= padding;
         maxBounds.y -= padding;
         // --- ▲ 경계 계산 끝 ▲ ---
-
-        SetNewRandomDestination();
-
-        audioSource = GetComponent<AudioSource>(); // Audio Source 컴포넌트 가져오기
     }
 
     void Update()

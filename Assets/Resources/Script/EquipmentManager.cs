@@ -11,19 +11,21 @@ public class EquipmentManager : MonoBehaviour
     public UI_EquipmentPanel uiEquipmentPanel;
     private Inventory inventory; // 인벤토리 참조 변수 추가
 
+    private PlayerStats playerStats; // CharacterStats 참조 변수
+
     void Awake()
     {
         // 같은 오브젝트에 있는 Inventory 스크립트를 찾아 연결
         inventory = GetComponent<Inventory>();
+        playerStats = GetComponent<PlayerStats>(); // 컴포넌트 찾아두기
     }
 
     // 아이템 장착 함수
-    public void Equip(ItemData newItem)
+    public void Equip(EquipmentData newItem)
     {
-        // 장비 아이템이 아니면 함수 종료
-        if (!newItem.isEquipment) return;
+        if (newItem == null) return;
 
-        EquipmentType type = newItem.equipmentType;
+        EquipmentType type = newItem.equipType;
 
         // ▼▼▼ 장비 교체 로직 추가 ▼▼▼
         // 1. 만약 해당 부위에 이미 다른 아이템을 착용 중이라면
@@ -45,6 +47,33 @@ public class EquipmentManager : MonoBehaviour
         {
             uiEquipmentPanel.UpdateUI();
         }
-        // TODO: UI 업데이트 및 스탯 재계산
+
+        // ▼▼▼ playerStats 변수를 통해 능력치 재계산 함수 호출 ▼▼▼
+        if (playerStats != null)
+        {
+            playerStats.CalculateFinalStats();
+        }
     }
+
+    public void Unequip(EquipmentType type)
+    {
+        if (!equippedItems.ContainsKey(type) || equippedItems[type] == null) return;
+
+        ItemData oldItem = equippedItems[type];
+        inventory.AddItem(oldItem);
+        equippedItems.Remove(type);
+        // 또는 equippedItems[type] = null;
+
+        if (uiEquipmentPanel != null)
+        {
+            uiEquipmentPanel.UpdateUI();
+        }
+
+        // ▼▼▼ playerStats 변수를 통해 함수 호출 ▼▼▼
+        if (playerStats != null)
+        {
+            playerStats.CalculateFinalStats();
+        }
+    }
+
 }

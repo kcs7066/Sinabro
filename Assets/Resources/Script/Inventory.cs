@@ -44,21 +44,21 @@ public class Inventory : MonoBehaviour
         // 사용하려는 슬롯에 아이템이 있는지 먼저 확인
         if (slots[slotIndex].item == null) return;
       
-        ItemData itemToUse = slots[slotIndex].item;
+        ItemData itemToUse = slots[slotIndex].item;// itemToUse는 아직 'ItemData' 타입
 
         // 1. 장비 아이템일 경우
-        if (itemToUse.isEquipment)
+        if (itemToUse is EquipmentData equipData)
         {
             // 장비 매니저에게 아이템을 장착하라고 전달
-            equipmentManager.Equip(itemToUse);
+            equipmentManager.Equip(equipData);
             // 인벤토리에서는 해당 아이템 슬롯을 완전히 비움
             slots[slotIndex] = new InventorySlot(null, 0);
         }
         // 2. 소모품 아이템일 경우 (장비가 아닐 때)
-        else
+        else if (itemToUse is ConsumableData consumableData)
         {
             // TODO: 여기에 포션 사용 같은 소모품 로직 추가
-            Debug.Log(itemToUse.itemName + "을(를) 사용했습니다.");
+            Debug.Log(consumableData.itemName + "을(를) 사용했습니다.");
 
             // 수량을 1 감소시킴
             slots[slotIndex].quantity--;
@@ -69,13 +69,13 @@ public class Inventory : MonoBehaviour
                 slots[slotIndex] = new InventorySlot(null, 0);
             }
         }
-            if (uiInventory != null && uiInventory.gameObject.activeInHierarchy)
-            {
-                uiInventory.UpdateInventoryUI();
-                Debug.Log("UI 업데이트 함수 호출 완료.");
-            }
+        // 마지막으로 UI 업데이트
+        if (uiInventory != null && uiInventory.gameObject.activeInHierarchy)
+        {
+            uiInventory.UpdateInventoryUI();
+        }
 
-        
+
     }
     // 아이템 추가 함수
     public void AddItem(ItemData item)
@@ -83,18 +83,33 @@ public class Inventory : MonoBehaviour
         // 1. 이미 같은 아이템이 있고, 겹칠 여유 공간이 있는지 확인
         for (int i = 0; i < slots.Count; i++)
         {
-            // 슬롯에 아이템이 있고, 그 아이템이 추가하려는 아이템과 같으며, 최대 수량 미만일 때
-            if (slots[i].item != null && slots[i].item == item && slots[i].quantity < item.maxStack)
+            // 슬롯에 아이템이 있고, 추가하려는 아이템과 ID가 같은지 확인
+            if (slots[i].item != null && slots[i].item.itemID == item.itemID)
             {
-                slots[i].quantity++; // 수량만 1 증가
-                Debug.Log($"{item.itemName}의 수량이 증가했습니다. 현재: {slots[i].quantity}");
+                int maxStack = 1; // 기본 최대 스택은 1(겹치기 불가)
 
-                // ▼▼▼ 이 부분을 수정합니다 ▼▼▼
-                if (uiInventory != null && uiInventory.gameObject.activeInHierarchy)
+                // 아이템 타입에 따라 실제 maxStack 값을 가져옴
+                if (item is ConsumableData consumable)
                 {
-                    uiInventory.UpdateInventoryUI();
+                    maxStack = consumable.maxStack;
                 }
-                return; // 아이템을 겹쳤으므로 함수 종료
+                else if (item is MaterialData material)
+                {
+                    maxStack = material.maxStack;
+                }
+
+                // 겹칠 수 있는 아이템이고(maxStack > 1), 현재 슬롯이 꽉 차지 않았다면
+                if (maxStack > 1 && slots[i].quantity < maxStack)
+                {
+                    slots[i].quantity++;
+                    Debug.Log($"{item.itemName}의 수량이 증가했습니다. 현재: {slots[i].quantity}");
+
+                    if (uiInventory != null && uiInventory.gameObject.activeInHierarchy)
+                    {
+                        uiInventory.UpdateInventoryUI();
+                    }
+                    return; // 아이템을 겹쳤으므로 함수 종료
+                }
             }
         }
 

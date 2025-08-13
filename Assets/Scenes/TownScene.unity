@@ -346,6 +346,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   uiEquipmentPanel: {fileID: 782151039}
+--- !u!114 &57802148
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 57802110}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2602d135171307469375730b314a21c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Level: 0
+  MaxHP: 100
+  CurrentHP: 100
+  baseAttackPower: 50
+  baseAttackSpeed: 1
+  baseAttackRange: 1.5
+  baseMoveSpeed: 5
+  AttackCooldown: 2
+  finalAttackPower: 0
+  finalAttackSpeed: 0
+  finalAttackRange: 0
+  finalMoveSpeed: 0
+  finalItemDropRateBonus: 0
+  damageTextPrefab: {fileID: 0}
+  damageTextSpawnPoint: {fileID: 0}
 --- !u!1 &171129918
 GameObject:
   m_ObjectHideFlags: 0
@@ -6987,10 +7014,14 @@ PrefabInstance:
       propertyPath: lootAlertContainer
       value: 
       objectReference: {fileID: 1221861091}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7687113273810436092, guid: 1987c7e79445cde4299fdfee07a9fa0c, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3470177082533757923, guid: 1987c7e79445cde4299fdfee07a9fa0c, type: 3}
+      insertIndex: 3
+      addedObject: {fileID: 57802148}
     - targetCorrespondingSourceObject: {fileID: 3470177082533757923, guid: 1987c7e79445cde4299fdfee07a9fa0c, type: 3}
       insertIndex: -1
       addedObject: {fileID: 57802111}
