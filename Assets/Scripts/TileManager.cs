@@ -6,7 +6,8 @@ using UnityEngine.Tilemaps;
 public class TileManager : MonoBehaviour
 {
     public Tilemap objectTilemap;
-    public InventoryManager inventoryManager; // 인벤토리 관리자를 연결할 변수
+    public InventoryManager inventoryManager;
+    public PlayerEquipment playerEquipment; // 플레이어 장비 정보를 참조할 변수
 
     private Dictionary<Vector3Int, int> tileHealths = new Dictionary<Vector3Int, int>();
 
@@ -19,7 +20,6 @@ public class TileManager : MonoBehaviour
 
             TileBase tile = objectTilemap.GetTile(cellPosition);
 
-            // 해당 셀에 타일이 있고, 그 타일이 WorldTile 타입인지 확인합니다.
             if (tile is WorldTile)
             {
                 DamageTile(cellPosition, (WorldTile)tile);
@@ -27,15 +27,17 @@ public class TileManager : MonoBehaviour
         }
     }
 
-    // 이제 어떤 타일에 피해를 주는지도 알아야 하므로 WorldTile을 매개변수로 받습니다.
     void DamageTile(Vector3Int cellPosition, WorldTile tile)
     {
         if (!tileHealths.ContainsKey(cellPosition))
         {
-            tileHealths.Add(cellPosition, 3);
+            // 이제 타일의 체력을 더 높게 설정해서 테스트해봅시다.
+            tileHealths.Add(cellPosition, 10);
         }
 
-        tileHealths[cellPosition]--;
+        // 플레이어 장비로부터 현재 도구의 채집 능력을 가져와서 피해를 줍니다.
+        int damage = playerEquipment.GetCurrentToolPower();
+        tileHealths[cellPosition] -= damage;
 
         if (tileHealths[cellPosition] > 0)
         {
@@ -46,11 +48,8 @@ public class TileManager : MonoBehaviour
             tileHealths.Remove(cellPosition);
             objectTilemap.SetTile(cellPosition, null);
 
-            // 아이템 드랍 로직!
-            // 만약 파괴된 타일이 드랍할 아이템 정보를 가지고 있다면,
             if (tile.dropItemData != null)
             {
-                // 인벤토리 매니저에게 아이템을 1개 추가하라고 요청합니다.
                 inventoryManager.AddItem(tile.dropItemData, 1);
             }
 

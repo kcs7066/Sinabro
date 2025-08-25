@@ -31,6 +31,8 @@ public class InventoryManager : MonoBehaviour
     public List<InventorySlot> inventorySlots = new List<InventorySlot>();
 
     public GameObject inventoryPanel;
+    public QuickSlotManager quickSlotManager; // 퀵슬롯 매니저를 참조할 변수
+
     private List<InventorySlotUI> slotUIs = new List<InventorySlotUI>();
     private bool isInventoryOpen = false;
 
@@ -63,6 +65,12 @@ public class InventoryManager : MonoBehaviour
                 slotUIs[i].ClearSlot();
             }
         }
+
+        // 인벤토리 UI가 변경될 때마다 퀵슬롯 UI도 업데이트하도록 호출합니다.
+        if (quickSlotManager != null)
+        {
+            quickSlotManager.UpdateAllQuickSlotsUI();
+        }
     }
 
     public void AddItem(ItemData itemData, int amount)
@@ -84,7 +92,6 @@ public class InventoryManager : MonoBehaviour
         UpdateInventoryUI();
     }
 
-    // 아이템을 제거하는 함수 (새로 추가됨!)
     public void RemoveItem(ItemData itemData, int amount)
     {
         InventorySlot slotToRemove = null;
@@ -93,7 +100,6 @@ public class InventoryManager : MonoBehaviour
             if (slot.itemData == itemData)
             {
                 slot.RemoveQuantity(amount);
-                // 만약 아이템 개수가 0 이하가 되면, 이 슬롯을 완전히 제거해야 합니다.
                 if (slot.quantity <= 0)
                 {
                     slotToRemove = slot;
@@ -101,14 +107,10 @@ public class InventoryManager : MonoBehaviour
                 break;
             }
         }
-
-        // 루프가 끝난 후, 제거할 슬롯이 있다면 리스트에서 제거합니다.
         if (slotToRemove != null)
         {
             inventorySlots.Remove(slotToRemove);
         }
-
-        // 아이템을 제거한 후, UI를 즉시 업데이트합니다.
         UpdateInventoryUI();
     }
 
