@@ -6,6 +6,9 @@ public class PlayerEquipment : MonoBehaviour
     // 현재 손에 들고 있는 아이템 슬롯 정보
     public InventorySlot equippedItemSlot;
 
+    // 유니티 에디터에서 연결할, 손에 든 아이템을 표시할 Sprite Renderer
+    public SpriteRenderer handSpriteRenderer;
+
     // 인벤토리 슬롯의 아이템을 장착하는 함수
     public void EquipItem(InventorySlot slot)
     {
@@ -13,6 +16,8 @@ public class PlayerEquipment : MonoBehaviour
         if (slot != null && slot.itemData != null && slot.itemData.itemType == ItemType.Tool)
         {
             equippedItemSlot = slot;
+            // 손에 든 아이템의 스프라이트를 업데이트합니다.
+            handSpriteRenderer.sprite = slot.itemData.itemIcon;
             Debug.Log(slot.itemData.itemName + " 장착!");
         }
         else
@@ -26,6 +31,8 @@ public class PlayerEquipment : MonoBehaviour
     public void UnequipItem()
     {
         equippedItemSlot = null;
+        // 손에 든 아이템의 스프라이트를 비웁니다.
+        handSpriteRenderer.sprite = null;
         Debug.Log("장착 해제됨");
     }
 
