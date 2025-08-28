@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 128474423f1c0c840945cd37cf5f16e8, type: 3}
-  m_Name: StoneBrickItem
+  m_Name: MushroomItem
   m_EditorClassIdentifier: 
-  itemID: 1
-  itemName: "\uC11D\uC7AC"
-  itemIcon: {fileID: 1838313524879157533, guid: c399aa2a7fdcc7448b910b39a195f930, type: 3}
+  itemID: 4
+  itemName: "\uBC84\uC12F"
+  itemIcon: {fileID: -822471782976514705, guid: 4f033c389687454429bbb8c3e33782a6, type: 3}
   itemDescription: 
   itemType: 0
   gatheringPower: 1

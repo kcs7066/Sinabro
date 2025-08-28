@@ -25,13 +25,12 @@ public class InventorySlot
     }
 }
 
-// 이 스크립트는 게임의 전체 인벤토리를 관리하고 UI를 업데이트합니다.
 public class InventoryManager : MonoBehaviour
 {
     public List<InventorySlot> inventorySlots = new List<InventorySlot>();
 
     public GameObject inventoryPanel;
-    public QuickSlotManager quickSlotManager; // 퀵슬롯 매니저를 참조할 변수
+    public QuickSlotManager quickSlotManager;
 
     private List<InventorySlotUI> slotUIs = new List<InventorySlotUI>();
     private bool isInventoryOpen = false;
@@ -66,14 +65,14 @@ public class InventoryManager : MonoBehaviour
             }
         }
 
-        // 인벤토리 UI가 변경될 때마다 퀵슬롯 UI도 업데이트하도록 호출합니다.
         if (quickSlotManager != null)
         {
             quickSlotManager.UpdateAllQuickSlotsUI();
         }
     }
 
-    public void AddItem(ItemData itemData, int amount)
+    // 이제 updateUI 매개변수를 받습니다.
+    public void AddItem(ItemData itemData, int amount, bool updateUI = true)
     {
         bool itemExists = false;
         foreach (InventorySlot slot in inventorySlots)
@@ -89,10 +88,12 @@ public class InventoryManager : MonoBehaviour
         {
             inventorySlots.Add(new InventorySlot(itemData, amount));
         }
-        UpdateInventoryUI();
+
+        if (updateUI) UpdateInventoryUI();
     }
 
-    public void RemoveItem(ItemData itemData, int amount)
+    // 이제 updateUI 매개변수를 받습니다.
+    public void RemoveItem(ItemData itemData, int amount, bool updateUI = true)
     {
         InventorySlot slotToRemove = null;
         foreach (InventorySlot slot in inventorySlots)
@@ -111,7 +112,8 @@ public class InventoryManager : MonoBehaviour
         {
             inventorySlots.Remove(slotToRemove);
         }
-        UpdateInventoryUI();
+
+        if (updateUI) UpdateInventoryUI();
     }
 
     public int GetItemQuantity(ItemData itemData)

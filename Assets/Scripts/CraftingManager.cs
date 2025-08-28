@@ -4,44 +4,35 @@ using UnityEngine;
 // 이 스크립트는 게임의 전체 제작 시스템을 총괄합니다.
 public class CraftingManager : MonoBehaviour
 {
-    // 유니티 에디터에서 연결해 줄 변수들
     public InventoryManager inventoryManager;
     public List<CraftingRecipe> allRecipes;
-    public GameObject craftingPanel;          // 제작 창 Panel UI
+    public GameObject craftingPanel;
     public Transform recipeSlotParent;
     public GameObject recipeSlotPrefab;
 
-    private bool isCraftingOpen = false; // 제작 창의 현재 상태 (열림/닫힘)
+    private bool isCraftingOpen = false;
 
     void Start()
     {
-        // 게임이 시작되면 모든 제작법을 UI에 표시하고,
         SetupCraftingWindow();
-        // 제작 창을 닫아둡니다.
         craftingPanel.SetActive(false);
     }
 
-    // 매 프레임마다 호출됩니다.
     void Update()
     {
-        // 만약 'C' 키를 눌렀다면,
         if (Input.GetKeyDown(KeyCode.C))
         {
-            // isCraftingOpen 상태를 반전시킵니다 (true -> false, false -> true).
             isCraftingOpen = !isCraftingOpen;
-            // 제작 패널을 현재 상태에 맞게 켜거나 끕니다.
             craftingPanel.SetActive(isCraftingOpen);
         }
     }
 
-    // 제작 창 UI를 설정하는 함수
     void SetupCraftingWindow()
     {
         foreach (CraftingRecipe recipe in allRecipes)
         {
             GameObject slotGO = Instantiate(recipeSlotPrefab, recipeSlotParent);
             CraftingSlotUI slotUI = slotGO.GetComponent<CraftingSlotUI>();
-
             slotUI.Setup(recipe, this);
         }
     }
@@ -49,6 +40,16 @@ public class CraftingManager : MonoBehaviour
     // 제작을 시도하는 함수
     public void AttemptCraft(CraftingRecipe recipe)
     {
+        // --- 추가된 방어 코드 ---
+        // 제작법이나 결과 아이템이 설정되지 않았으면 오류를 출력하고 중단합니다.
+        if (recipe == null || recipe.resultItem == null)
+        {
+            Debug.LogError("오류: 제작하려는 Recipe 또는 Result Item이 Inspector에 설정되지 않았습니다!");
+            return;
+        }
+        // ---
+
+        // 1. 재료 확인
         foreach (var ingredient in recipe.ingredients)
         {
             if (inventoryManager.GetItemQuantity(ingredient.itemData) < ingredient.quantity)
@@ -58,12 +59,17 @@ public class CraftingManager : MonoBehaviour
             }
         }
 
+        // 2. 재료 소모 (UI 업데이트 없이)
         foreach (var ingredient in recipe.ingredients)
         {
-            inventoryManager.RemoveItem(ingredient.itemData, ingredient.quantity);
+            inventoryManager.RemoveItem(ingredient.itemData, ingredient.quantity, false);
         }
 
-        inventoryManager.AddItem(recipe.resultItem, recipe.resultQuantity);
+        // 3. 결과 아이템 추가 (UI 업데이트 없이)
+        inventoryManager.AddItem(recipe.resultItem, recipe.resultQuantity, false);
+
+        // 4. 모든 작업이 끝난 후 UI를 한 번만 업데이트하여 효율을 높입니다.
+        inventoryManager.UpdateInventoryUI();
 
         Debug.Log(recipe.resultItem.itemName + " 제작 성공!");
     }
