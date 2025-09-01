@@ -12,17 +12,17 @@ public class PlayerEquipment : MonoBehaviour
     // 인벤토리 슬롯의 아이템을 장착하는 함수
     public void EquipItem(InventorySlot slot)
     {
-        // 아이템 타입이 도구일 때만 장착합니다.
-        if (slot != null && slot.itemData != null && slot.itemData.itemType == ItemType.Tool)
+        // --- 수정된 부분 ---
+        // 이제 아이템 타입과 상관없이 모든 아이템을 손에 들 수 있습니다.
+        if (slot != null && slot.itemData != null)
         {
             equippedItemSlot = slot;
-            // 손에 든 아이템의 스프라이트를 업데이트합니다.
             handSpriteRenderer.sprite = slot.itemData.itemIcon;
-            Debug.Log(slot.itemData.itemName + " 장착!");
+            Debug.Log(slot.itemData.itemName + " 손에 듦!");
         }
         else
         {
-            // 도구가 아니거나 빈 슬롯이면 장착을 해제합니다.
+            // 빈 슬롯이면 장착을 해제합니다.
             UnequipItem();
         }
     }
@@ -31,24 +31,20 @@ public class PlayerEquipment : MonoBehaviour
     public void UnequipItem()
     {
         equippedItemSlot = null;
-        // 손에 든 아이템의 스프라이트를 비웁니다.
         handSpriteRenderer.sprite = null;
-        Debug.Log("장착 해제됨");
+        Debug.Log("손 비움");
     }
 
-    // 현재 장착한 도구의 채집 능력을 반환하는 함수
+    // 현재 손에 든 도구의 채집 능력을 반환하는 함수
     public int GetCurrentToolPower()
     {
-        if (equippedItemSlot == null || equippedItemSlot.itemData == null)
+        // 손에 든 아이템이 없거나, 아이템이 도구가 아니라면 기본 채집 능력(맨손)인 1을 반환합니다.
+        if (equippedItemSlot == null || equippedItemSlot.itemData == null || equippedItemSlot.itemData.itemType != ItemType.Tool)
         {
             return 1; // 맨손
         }
 
-        if (equippedItemSlot.itemData.itemType == ItemType.Tool)
-        {
-            return equippedItemSlot.itemData.gatheringPower;
-        }
-
-        return 1; // 맨손
+        // 손에 든 아이템이 도구라면, 해당 도구의 gatheringPower를 반환합니다.
+        return equippedItemSlot.itemData.gatheringPower;
     }
 }

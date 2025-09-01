@@ -11,13 +11,13 @@ public class PlayerController : NetworkBehaviour
     private Rigidbody2D rb;
     private Vector2 movementInput;
     private PlayerEquipment playerEquipment;
-    private ItemDatabase itemDatabase; // 아이템 DB 참조
+    private TileManager tileManager; // TileManager 참조
 
     public override void OnNetworkSpawn()
     {
         rb = GetComponent<Rigidbody2D>();
         playerEquipment = GetComponent<PlayerEquipment>();
-        itemDatabase = FindObjectOfType<ItemDatabase>(); // 씬에서 ItemDatabase를 찾습니다.
+        tileManager = FindObjectOfType<TileManager>(); // 씬에서 TileManager를 찾습니다.
 
         if (IsOwner)
         {
@@ -36,6 +36,12 @@ public class PlayerController : NetworkBehaviour
         {
             Interact();
         }
+
+        // 마우스 클릭으로 타일 파괴를 요청합니다.
+        if (Input.GetMouseButtonDown(0))
+        {
+            tileManager.RequestDamageTile(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+        }
     }
 
     void FixedUpdate()
@@ -53,8 +59,6 @@ public class PlayerController : NetworkBehaviour
             if (collider.TryGetComponent<HungrySlime>(out HungrySlime slime))
             {
                 ItemData heldItem = playerEquipment.equippedItemSlot?.itemData;
-
-                // 아이템이 있으면 ID를, 없으면 -1을 보냅니다.
                 int heldItemID = (heldItem != null) ? heldItem.itemID : -1;
 
                 FeedSlimeServerRpc(slime.GetComponent<NetworkObject>().NetworkObjectId, heldItemID);
@@ -69,7 +73,6 @@ public class PlayerController : NetworkBehaviour
         rb.linearVelocity = input.normalized * moveSpeed;
     }
 
-    // 이제 ItemData 대신 int (itemID)를 받습니다.
     [ServerRpc(RequireOwnership = false)]
     private void FeedSlimeServerRpc(ulong slimeNetworkId, int heldItemID)
     {
@@ -77,8 +80,7 @@ public class PlayerController : NetworkBehaviour
         {
             if (slimeObject.TryGetComponent<HungrySlime>(out HungrySlime slime))
             {
-                // 서버에서 ID를 이용해 실제 ItemData를 찾아옵니다.
-                ItemData itemToFeed = itemDatabase.GetItemById(heldItemID);
+                ItemData itemToFeed = ItemDatabase.Instance.GetItemById(heldItemID);
                 slime.FeedItem(itemToFeed);
             }
         }

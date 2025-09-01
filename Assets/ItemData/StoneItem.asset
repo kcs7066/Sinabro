@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 128474423f1c0c840945cd37cf5f16e8, type: 3}
   m_Name: StoneItem
   m_EditorClassIdentifier: 
+  itemID: 1
   itemName: "\uB3CC\uBA69\uC774"
   itemIcon: {fileID: 491907057074443852, guid: c399aa2a7fdcc7448b910b39a195f930, type: 3}
   itemDescription: 
+  itemType: 0
+  gatheringPower: 1

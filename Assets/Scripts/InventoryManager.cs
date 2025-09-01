@@ -27,6 +27,10 @@ public class InventorySlot
 
 public class InventoryManager : MonoBehaviour
 {
+    [Header("테스트용 아이템")]
+    public ItemData testMushroom;
+    public ItemData testAxe;
+
     public List<InventorySlot> inventorySlots = new List<InventorySlot>();
 
     public GameObject inventoryPanel;
@@ -48,6 +52,18 @@ public class InventoryManager : MonoBehaviour
         {
             isInventoryOpen = !isInventoryOpen;
             inventoryPanel.SetActive(isInventoryOpen);
+        }
+
+        // 테스트용 키 입력: 숫자 키 8을 누르면 버섯 획득
+        if (Input.GetKeyDown(KeyCode.Alpha8))
+        {
+            if (testMushroom != null) AddItem(testMushroom, 1);
+        }
+
+        // 테스트용 키 입력: 숫자 키 9를 누르면 도끼 획득
+        if (Input.GetKeyDown(KeyCode.Alpha9))
+        {
+            if (testAxe != null) AddItem(testAxe, 1);
         }
     }
 

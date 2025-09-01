@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using Unity.Netcode;
 
-// 이제 슬라임도 NetworkBehaviour를 상속받습니다.
 public class HungrySlime : NetworkBehaviour
 {
     [Header("슬라임 설정")]
@@ -20,13 +19,10 @@ public class HungrySlime : NetworkBehaviour
         moveTimer = moveInterval;
     }
 
-    // 움직임 로직은 서버에서만 실행되어야 합니다.
     void Update()
     {
         if (!IsServer) return;
-
         moveTimer -= Time.deltaTime;
-
         if (moveTimer <= 0)
         {
             float randomAngle = Random.Range(0f, 360f);
@@ -41,21 +37,30 @@ public class HungrySlime : NetworkBehaviour
         rb.linearVelocity = moveDirection * moveSpeed;
     }
 
-    // 이 함수는 서버에서만 호출됩니다 (PlayerController의 ServerRpc를 통해).
     public void FeedItem(ItemData itemData)
     {
-        if (itemData == requiredItem)
+        // --- 디버그 로그 추가 ---
+        string receivedItemName = (itemData != null) ? itemData.itemName : "아무것도 없음";
+        string requiredItemName = (requiredItem != null) ? requiredItem.itemName : "설정 안됨";
+        Debug.Log("[서버] FeedItem 함수 실행됨. 받은 아이템: " + receivedItemName + " / 필요한 아이템: " + requiredItemName);
+        // ---
+
+        // --- 수정된 부분 ---
+        // 이제 아이템 에셋 자체를 비교하는 대신, 고유한 itemID를 비교합니다.
+        // 양쪽 다 null이 아니고, ID가 같은지 확인합니다.
+        if (itemData != null && requiredItem != null && itemData.itemID == requiredItem.itemID)
         {
             Satisfy();
+        }
+        else
+        {
+            Debug.Log("[서버] 아이템이 일치하지 않아 아무 일도 일어나지 않았습니다.");
         }
     }
 
     private void Satisfy()
     {
-        Debug.Log("슬라임 만족!");
-        // TODO: 아이템 드랍 로직 (이것도 서버에서만 실행되어야 함)
-
-        // 네트워크 오브젝트를 파괴할 때는 Destroy 대신 Despawn을 사용해야 합니다.
+        Debug.Log("[서버] 아이템 일치! 슬라임 만족!");
         GetComponent<NetworkObject>().Despawn();
     }
 }

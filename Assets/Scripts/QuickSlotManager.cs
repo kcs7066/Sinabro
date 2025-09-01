@@ -1,29 +1,41 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI; // Image ÄÄÆ÷³ÍÆ®¸¦ Á¦¾îÇÏ±â À§ÇØ ÇÊ¿äÇÕ´Ï´Ù.
+using UnityEngine.UI;
 
-// ÀÌ ½ºÅ©¸³Æ®´Â Äü½½·Ô UI¿Í ÀåÂø ½Ã½ºÅÛÀ» °ü¸®ÇÕ´Ï´Ù.
+// ì´ ìŠ¤í¬ë¦½íŠ¸ëŠ” í€µìŠ¬ë¡¯ UIì™€ ì¥ì°© ì‹œìŠ¤í…œì„ ê´€ë¦¬í•©ë‹ˆë‹¤.
 public class QuickSlotManager : MonoBehaviour
 {
-    // À¯´ÏÆ¼ ¿¡µğÅÍ¿¡¼­ ¿¬°áÇØ ÁÙ º¯¼öµé
     public InventoryManager inventoryManager;
-    public PlayerEquipment playerEquipment;
-    public GameObject quickSlotPanel; // Äü½½·Ô UIµéÀÌ µé¾îÀÖ´Â Panel
+    // public PlayerEquipment playerEquipment; // Inspector ì—°ê²°ì„ ì œê±°í•©ë‹ˆë‹¤.
+    private PlayerEquipment playerEquipment; // ìŠ¤í¬ë¦½íŠ¸ê°€ ì§ì ‘ ì°¾ì„ ë³€ìˆ˜ì…ë‹ˆë‹¤.
+    public GameObject quickSlotPanel;
 
     private List<InventorySlotUI> quickSlotUIs = new List<InventorySlotUI>();
-    private int selectedSlotIndex = 0; // ÇöÀç ¼±ÅÃµÈ Äü½½·ÔÀÇ ÀÎµ¦½º
+    private int selectedSlotIndex = 0;
 
     void Start()
     {
         quickSlotUIs.AddRange(quickSlotPanel.GetComponentsInChildren<InventorySlotUI>());
-        UpdateAllQuickSlotsUI(); // °ÔÀÓ ½ÃÀÛ ½Ã ÀÎº¥Åä¸®¿Í UI µ¿±âÈ­
         UpdateSelectedSlotVisual();
-        EquipItemFromSlot(selectedSlotIndex); // Ã¹ ¹øÂ° ½½·Ô ¾ÆÀÌÅÛ ÀÚµ¿ ÀåÂø
     }
 
     void Update()
     {
-        // ¼ıÀÚ Å° ÀÔ·ÂÀ» °¨ÁöÇÕ´Ï´Ù (Äü½½·Ô °³¼ö¸¸Å­).
+        // --- ì¶”ê°€ëœ ë¶€ë¶„ ---
+        // ì•„ì§ ë¡œì»¬ í”Œë ˆì´ì–´ë¥¼ ì°¾ì§€ ëª»í–ˆë‹¤ë©´, ë§¤ í”„ë ˆì„ë§ˆë‹¤ ì°¾ì•„ë´…ë‹ˆë‹¤.
+        if (playerEquipment == null && PlayerController.LocalInstance != null)
+        {
+            // ì°¾ì•˜ë‹¤ë©´, ê·¸ í”Œë ˆì´ì–´ì˜ PlayerEquipment ì»´í¬ë„ŒíŠ¸ë¥¼ ê°€ì ¸ì˜µë‹ˆë‹¤.
+            playerEquipment = PlayerController.LocalInstance.GetComponent<PlayerEquipment>();
+
+            // í”Œë ˆì´ì–´ë¥¼ ì°¾ì€ ì´ ì‹œì ì— UIë¥¼ í•œë²ˆ ë™ê¸°í™”í•˜ê³  ì´ˆê¸° ì•„ì´í…œì„ ì¥ì°©í•©ë‹ˆë‹¤.
+            UpdateAllQuickSlotsUI();
+        }
+        // ---
+
+        // í”Œë ˆì´ì–´ë¥¼ ì°¾ì§€ ëª»í–ˆë‹¤ë©´ í‚¤ ì…ë ¥ì„ ë°›ì§€ ì•ŠìŠµë‹ˆë‹¤.
+        if (playerEquipment == null) return;
+
         for (int i = 0; i < quickSlotUIs.Count; i++)
         {
             if (Input.GetKeyDown(KeyCode.Alpha1 + i))
@@ -31,31 +43,30 @@ public class QuickSlotManager : MonoBehaviour
                 selectedSlotIndex = i;
                 UpdateSelectedSlotVisual();
                 EquipItemFromSlot(selectedSlotIndex);
-                break; // Å° ÇÏ³ª¸¸ Ã³¸®ÇÏµµ·Ï ·çÇÁ¸¦ ºüÁ®³ª°©´Ï´Ù.
+                break;
             }
         }
     }
 
-    // Äü½½·Ô ÀüÃ¼ UI¸¦ ÀÎº¥Åä¸® µ¥ÀÌÅÍ¿¡ ¸ÂÃç ¾÷µ¥ÀÌÆ®ÇÏ´Â ÇÔ¼ö
     public void UpdateAllQuickSlotsUI()
     {
+        // í”Œë ˆì´ì–´ë¥¼ ì°¾ì§€ ëª»í–ˆë‹¤ë©´ UI ì—…ë°ì´íŠ¸ë¥¼ í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.
+        if (playerEquipment == null) return;
+
         for (int i = 0; i < quickSlotUIs.Count; i++)
         {
-            // ¸¸¾à ÀÎº¥Åä¸®¿¡ ÇØ´ç ½½·ÔÀÇ ¾ÆÀÌÅÛÀÌ ÀÖ´Ù¸é,
             if (i < inventoryManager.inventorySlots.Count)
             {
                 quickSlotUIs[i].UpdateSlot(inventoryManager.inventorySlots[i]);
             }
-            else // ¾ø´Ù¸é,
+            else
             {
                 quickSlotUIs[i].ClearSlot();
             }
         }
-        // UI°¡ º¯°æµÇ¾úÀ¸´Ï, ÇöÀç ¼±ÅÃµÈ ¾ÆÀÌÅÛÀ» ´Ù½Ã ÀåÂøÇÕ´Ï´Ù.
         EquipItemFromSlot(selectedSlotIndex);
     }
 
-    // ¼±ÅÃµÈ ½½·ÔÀ» ½Ã°¢ÀûÀ¸·Î Ç¥½ÃÇÏ´Â ÇÔ¼ö
     void UpdateSelectedSlotVisual()
     {
         for (int i = 0; i < quickSlotUIs.Count; i++)
@@ -71,20 +82,17 @@ public class QuickSlotManager : MonoBehaviour
         }
     }
 
-    // ÇØ´ç ½½·ÔÀÇ ¾ÆÀÌÅÛÀ» ÀåÂøÇÏ´Â ÇÔ¼ö
     void EquipItemFromSlot(int slotIndex)
     {
-        // ÀÎº¥Åä¸®¿¡ ÇØ´ç ½½·ÔÀÇ ¾ÆÀÌÅÛÀÌ ½ÇÁ¦·Î Á¸ÀçÇÏ´ÂÁö È®ÀÎÇÕ´Ï´Ù.
+        if (playerEquipment == null) return;
+
         if (slotIndex < inventoryManager.inventorySlots.Count)
         {
             InventorySlot slotToEquip = inventoryManager.inventorySlots[slotIndex];
-
-            // PlayerEquipment¿¡°Ô ÀÌ ½½·ÔÀÇ ¾ÆÀÌÅÛÀ» ÀåÂøÇÏ¶ó°í ¸í·ÉÇÕ´Ï´Ù.
             playerEquipment.EquipItem(slotToEquip);
         }
         else
         {
-            // ÇØ´ç ½½·ÔÀÌ ºñ¾îÀÖ´Ù¸é, ÀåÂøÀ» ÇØÁ¦ÇÕ´Ï´Ù.
             playerEquipment.UnequipItem();
         }
     }

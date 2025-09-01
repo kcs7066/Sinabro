@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 128474423f1c0c840945cd37cf5f16e8, type: 3}
   m_Name: StoneBrickItem
   m_EditorClassIdentifier: 
-  itemID: 1
+  itemID: 2
   itemName: "\uC11D\uC7AC"
   itemIcon: {fileID: 1838313524879157533, guid: c399aa2a7fdcc7448b910b39a195f930, type: 3}
   itemDescription: 

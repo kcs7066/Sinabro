@@ -1638,7 +1638,7 @@ GameObject:
   - component: {fileID: 1312324938}
   m_Layer: 5
   m_Name: Slider
-  m_TagString: Untagged
+  m_TagString: HealthSlider
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2699,15 +2699,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1700885767}
-  - component: {fileID: 1700885766}
+  - component: {fileID: 1700885776}
+  - component: {fileID: 1700885773}
   - component: {fileID: 1700885768}
   - component: {fileID: 1700885769}
   - component: {fileID: 1700885770}
-  - component: {fileID: 1700885771}
-  - component: {fileID: 1700885773}
   - component: {fileID: 1700885772}
   - component: {fileID: 1700885775}
-  - component: {fileID: 1700885776}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -2715,19 +2713,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1700885766
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1700885765}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 097a8b90047ecc54bb053abe8c4bb34a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  inventoryManager: {fileID: 1700885768}
 --- !u!4 &1700885767
 Transform:
   m_ObjectHideFlags: 0
@@ -2755,6 +2740,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b3230ed0d617a64592ecf54bf25bdc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  testMushroom: {fileID: 11400000, guid: 6471184f6cdfc2e45b7e32817a8712df, type: 2}
+  testAxe: {fileID: 11400000, guid: c446fa8a41d3b264ea465cc2634fb3c2, type: 2}
   inventorySlots: []
   inventoryPanel: {fileID: 26559375}
   quickSlotManager: {fileID: 1700885770}
@@ -2789,28 +2776,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inventoryManager: {fileID: 1700885768}
-  playerEquipment: {fileID: 2372325507176617787, guid: 61d98f26cbe2e8242b9d448569b1e0e3, type: 3}
   quickSlotPanel: {fileID: 853536385}
---- !u!114 &1700885771
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1700885765}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b974c628abf0c942a8bf09a932a6d2f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  player: {fileID: 4566897386070464375, guid: 61d98f26cbe2e8242b9d448569b1e0e3, type: 3}
-  chunkSize: 16
-  viewDistance: 1
-  chunkPrefab: {fileID: 5978004861392373540, guid: 6102f7f70a2d1f2409e36e0b4199ad5e, type: 3}
-  groundTile: {fileID: 11400000, guid: bce1a4b4a612fc547abd3a110ae9887e, type: 2}
-  objectTile: {fileID: 11400000, guid: 9c610f02e6140e240929ca9803efaa61, type: 2}
-  noiseScale: 0.1
-  objectThreshold: 0.7
 --- !u!114 &1700885772
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2929,6 +2895,99 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 628758793453542803, guid: 375c39d110e4c1e4fbf03057711912eb, type: 3}
   m_PrefabInstance: {fileID: 1935432969}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1900385879
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1900385881}
+  - component: {fileID: 1900385882}
+  - component: {fileID: 1900385880}
+  - component: {fileID: 1900385883}
+  m_Layer: 0
+  m_Name: WorldSystems
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1900385880
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1900385879}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 097a8b90047ecc54bb053abe8c4bb34a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+--- !u!4 &1900385881
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1900385879}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.72813, y: -5.99129, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1900385882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1900385879}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 2258958078
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 0
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
+--- !u!114 &1900385883
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1900385879}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b974c628abf0c942a8bf09a932a6d2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  player: {fileID: 4566897386070464375, guid: 61d98f26cbe2e8242b9d448569b1e0e3, type: 3}
+  chunkSize: 16
+  viewDistance: 1
+  chunkPrefab: {fileID: 5978004861392373540, guid: 6102f7f70a2d1f2409e36e0b4199ad5e, type: 3}
+  groundTile: {fileID: 11400000, guid: bce1a4b4a612fc547abd3a110ae9887e, type: 2}
+  objectTile: {fileID: 11400000, guid: 9c610f02e6140e240929ca9803efaa61, type: 2}
+  noiseScale: 0.1
+  objectThreshold: 0.7
 --- !u!1001 &1935432969
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3142,3 +3201,4 @@ SceneRoots:
   - {fileID: 1700885767}
   - {fileID: 967380719}
   - {fileID: 309950627}
+  - {fileID: 1900385881}
