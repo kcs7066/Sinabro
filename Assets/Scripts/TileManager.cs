@@ -3,106 +3,99 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using Unity.Netcode;
 
-// 이제 TileManager도 NetworkBehaviour가 되어야 합니다.
 public class TileManager : NetworkBehaviour
 {
-    // 타일 체력은 서버에만 존재해야 합니다.
-    private Dictionary<Vector3Int, int> worldTileHealths = new Dictionary<Vector3Int, int>();
+    private Dictionary<Vector3Int, int> tileHealths = new Dictionary<Vector3Int, int>();
+    private const int TILE_MAX_HEALTH = 3;
 
-    // 로컬 플레이어가 타일 파괴를 요청하는 함수
-    public void RequestDamageTile(Vector3 mouseWorldPos)
+    public void ProcessTileDamage(Vector3 worldPosition, ulong clientId)
     {
-        RaycastHit2D hit = Physics2D.Raycast(mouseWorldPos, Vector2.zero);
+        if (!IsServer) return;
 
-        if (hit.collider != null && hit.collider.TryGetComponent<Tilemap>(out var clickedTilemap))
+        Debug.Log($"[Server] Received tile damage request from client: {clientId} at position: {worldPosition}");
+
+        Collider2D[] hits = Physics2D.OverlapPointAll(worldPosition);
+        Tilemap targetTilemap = null;
+        WorldTile tile = null;
+        Vector3Int cellPosition = Vector3Int.zero;
+
+        foreach (var hit in hits)
         {
-            // 클릭된 타일맵이 있는 청크가 네트워크 오브젝트인지 확인합니다.
-            if (clickedTilemap.transform.parent.TryGetComponent<NetworkObject>(out var chunkNetworkObject))
+            if (hit.TryGetComponent<Tilemap>(out targetTilemap))
             {
-                Vector3Int cellPosition = clickedTilemap.WorldToCell(mouseWorldPos);
-                // 서버에 타일 파괴를 요청합니다.
-                DamageTileServerRpc(chunkNetworkObject.NetworkObjectId, cellPosition);
+                if (targetTilemap.name != "ObjectTilemap") continue;
+                cellPosition = targetTilemap.WorldToCell(worldPosition);
+                if (targetTilemap.GetTile(cellPosition) is WorldTile worldTile)
+                {
+                    tile = worldTile;
+                    break;
+                }
             }
         }
-    }
 
-    [ServerRpc(RequireOwnership = false)]
-    private void DamageTileServerRpc(ulong chunkNetworkId, Vector3Int cellPosition, ServerRpcParams rpcParams = default)
-    {
-        // 요청을 보낸 클라이언트의 플레이어를 찾습니다.
-        NetworkObject playerObject = NetworkManager.Singleton.ConnectedClients[rpcParams.Receive.SenderClientId].PlayerObject;
-        PlayerEquipment playerEquipment = playerObject.GetComponent<PlayerEquipment>();
-
-        // 타겟 청크를 찾습니다.
-        if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(chunkNetworkId, out var chunkObject))
+        if (targetTilemap != null && tile != null)
         {
-            Tilemap targetTilemap = chunkObject.transform.Find("ObjectTilemap").GetComponent<Tilemap>();
-            TileBase tile = targetTilemap.GetTile(cellPosition);
-
-            if (tile is WorldTile worldTile)
+            if (NetworkManager.Singleton.ConnectedClients.TryGetValue(clientId, out var client))
             {
-                Vector3Int worldCellPosition = new Vector3Int(
-                    (int)chunkObject.transform.position.x + cellPosition.x,
-                    (int)chunkObject.transform.position.y + cellPosition.y, 0);
+                tileHealths.TryGetValue(cellPosition, out int currentHealth);
+                if (currentHealth == 0) currentHealth = TILE_MAX_HEALTH;
 
-                if (!worldTileHealths.ContainsKey(worldCellPosition))
+                int damage = 1;
+                if (client.PlayerObject.TryGetComponent<PlayerEquipment>(out var equipment))
                 {
-                    worldTileHealths.Add(worldCellPosition, 10);
+                    damage = equipment.GetCurrentToolPower();
                 }
 
-                int damage = playerEquipment.GetCurrentToolPower();
-                worldTileHealths[worldCellPosition] -= damage;
+                currentHealth -= damage;
+                tileHealths[cellPosition] = currentHealth;
 
-                if (worldTileHealths[worldCellPosition] <= 0)
+                if (currentHealth <= 0)
                 {
-                    worldTileHealths.Remove(worldCellPosition);
+                    NetworkObject tilemapNetworkObject = targetTilemap.GetComponentInParent<NetworkObject>();
+                    RemoveTileClientRpc(tilemapNetworkObject.NetworkObjectId, cellPosition);
+                    tileHealths.Remove(cellPosition);
 
-                    // 아이템 드랍 로직
-                    if (worldTile.dropItemData != null)
+                    if (tile.dropItemData != null)
                     {
-                        // 아이템 ID와 수량을 준비합니다.
-                        int itemID = worldTile.dropItemData.itemID;
-                        int quantity = 1;
-
-                        // 요청을 보낸 특정 클라이언트에게만 아이템을 주라고 명령합니다.
-                        ClientRpcParams clientRpcParams = new ClientRpcParams
+                        Debug.Log($"[Server] Tile destroyed. Attempting to give item '{tile.dropItemData.itemName}' to client: {clientId}");
+                        if (client.PlayerObject.TryGetComponent<PlayerInventory>(out var playerInventory))
                         {
-                            Send = new ClientRpcSendParams
-                            {
-                                TargetClientIds = new ulong[] { rpcParams.Receive.SenderClientId }
-                            }
-                        };
-                        AwardItemClientRpc(itemID, quantity, clientRpcParams);
+                            Debug.Log($"[Server] Found PlayerInventory for client {clientId}. Adding item.");
+                            playerInventory.AddItem(tile.dropItemData.itemID, 1);
+                        }
+                        else
+                        {
+                            Debug.LogError($"[Server] FAILED to find PlayerInventory on player object for client: {clientId}");
+                        }
                     }
-
-                    // 모든 클라이언트에게 타일을 파괴하라고 명령합니다.
-                    DestroyTileClientRpc(chunkNetworkId, cellPosition);
                 }
             }
+            else
+            {
+                Debug.LogError($"[Server] FAILED to find client with ID: {clientId}");
+            }
         }
-    }
-
-    // 특정 클라이언트에게 아이템을 지급하는 함수
-    [ClientRpc]
-    private void AwardItemClientRpc(int itemID, int quantity, ClientRpcParams clientRpcParams = default)
-    {
-        // 이 코드는 서버가 지정한 타겟 클라이언트에서만 실행됩니다.
-        ItemData itemToAdd = ItemDatabase.Instance.GetItemById(itemID);
-        if (itemToAdd != null)
+        else
         {
-            // 씬에 있는 InventoryManager를 찾아 아이템을 추가합니다.
-            FindObjectOfType<InventoryManager>().AddItem(itemToAdd, quantity);
+            Debug.LogWarning($"[Server] No valid tile found at position {worldPosition} for damage request.");
         }
     }
 
     [ClientRpc]
-    private void DestroyTileClientRpc(ulong chunkNetworkId, Vector3Int cellPosition)
+    private void RemoveTileClientRpc(ulong chunkNetworkId, Vector3Int cellPosition)
     {
-        // 모든 클라이언트에서 실행됩니다.
-        if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(chunkNetworkId, out var chunkObject))
+        if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(chunkNetworkId, out var networkObject))
         {
-            Tilemap targetTilemap = chunkObject.transform.Find("ObjectTilemap").GetComponent<Tilemap>();
-            targetTilemap.SetTile(cellPosition, null);
+            Transform objectTilemapTransform = networkObject.transform.Find("ObjectTilemap");
+            if (objectTilemapTransform != null)
+            {
+                Tilemap targetTilemap = objectTilemapTransform.GetComponent<Tilemap>();
+                if (targetTilemap != null)
+                {
+                    targetTilemap.SetTile(cellPosition, null);
+                }
+            }
         }
     }
 }
+

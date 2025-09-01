@@ -1,76 +1,92 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using System.Collections.Generic;
+using Unity.Netcode;
 
-// 이 스크립트는 게임의 전체 제작 시스템을 총괄합니다.
-public class CraftingManager : MonoBehaviour
+public class CraftingManager : NetworkBehaviour
 {
-    public InventoryManager inventoryManager;
-    public List<CraftingRecipe> allRecipes;
+    public List<CraftingRecipe> allRecipes = new List<CraftingRecipe>();
     public GameObject craftingPanel;
-    public Transform recipeSlotParent;
     public GameObject recipeSlotPrefab;
-
-    private bool isCraftingOpen = false;
+    public Transform recipeSlotParent;
 
     void Start()
     {
-        SetupCraftingWindow();
         craftingPanel.SetActive(false);
+        PopulateCraftingUI();
     }
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.C))
         {
-            isCraftingOpen = !isCraftingOpen;
-            craftingPanel.SetActive(isCraftingOpen);
+            craftingPanel.SetActive(!craftingPanel.activeSelf);
         }
     }
 
-    void SetupCraftingWindow()
+    // 제작 UI를 채우는 함수 (시작 시 한 번만 실행)
+    void PopulateCraftingUI()
     {
-        foreach (CraftingRecipe recipe in allRecipes)
+        foreach (var recipe in allRecipes)
         {
             GameObject slotGO = Instantiate(recipeSlotPrefab, recipeSlotParent);
             CraftingSlotUI slotUI = slotGO.GetComponent<CraftingSlotUI>();
-            slotUI.Setup(recipe, this);
+            if (slotUI != null)
+            {
+                // CraftingManager 자신을 슬롯에 알려줍니다.
+                slotUI.Setup(recipe, this);
+            }
         }
     }
 
-    // 제작을 시도하는 함수
-    public void AttemptCraft(CraftingRecipe recipe)
+    // 클라이언트가 제작을 요청하면 서버에서 실행되는 함수
+    [ServerRpc(RequireOwnership = false)]
+    public void AttemptCraftServerRpc(int resultItemID, ServerRpcParams rpcParams = default)
     {
-        // --- 추가된 방어 코드 ---
-        // 제작법이나 결과 아이템이 설정되지 않았으면 오류를 출력하고 중단합니다.
-        if (recipe == null || recipe.resultItem == null)
-        {
-            Debug.LogError("오류: 제작하려는 Recipe 또는 Result Item이 Inspector에 설정되지 않았습니다!");
-            return;
-        }
-        // ---
+        CraftingRecipe recipeToCraft = FindRecipeByResultID(resultItemID);
+        if (recipeToCraft == null) return;
 
-        // 1. 재료 확인
-        foreach (var ingredient in recipe.ingredients)
+        // 요청을 보낸 플레이어를 찾습니다.
+        if (!NetworkManager.Singleton.ConnectedClients.TryGetValue(rpcParams.Receive.SenderClientId, out var client))
+            return;
+
+        if (!client.PlayerObject.TryGetComponent<PlayerInventory>(out var playerInventory))
+            return;
+
+        // 1. 재료가 충분한지 서버에서 확인합니다.
+        bool canCraft = true;
+        foreach (var ingredient in recipeToCraft.ingredients)
         {
-            if (inventoryManager.GetItemQuantity(ingredient.itemData) < ingredient.quantity)
+            if (playerInventory.GetItemQuantity(ingredient.itemData.itemID) < ingredient.quantity)
             {
-                Debug.Log("재료 부족: " + ingredient.itemData.itemName);
-                return;
+                canCraft = false;
+                break;
             }
         }
 
-        // 2. 재료 소모 (UI 업데이트 없이)
-        foreach (var ingredient in recipe.ingredients)
+        // 2. 재료가 충분하면, 재료를 제거하고 결과물을 추가합니다.
+        if (canCraft)
         {
-            inventoryManager.RemoveItem(ingredient.itemData, ingredient.quantity, false);
+            foreach (var ingredient in recipeToCraft.ingredients)
+            {
+                // [ServerRpc]가 아닌 일반 함수를 호출합니다.
+                playerInventory.RemoveItem(ingredient.itemData.itemID, ingredient.quantity);
+            }
+            // [ServerRpc]가 아닌 일반 함수를 호출합니다.
+            playerInventory.AddItem(recipeToCraft.resultItem.itemID, recipeToCraft.resultQuantity);
         }
+    }
 
-        // 3. 결과 아이템 추가 (UI 업데이트 없이)
-        inventoryManager.AddItem(recipe.resultItem, recipe.resultQuantity, false);
-
-        // 4. 모든 작업이 끝난 후 UI를 한 번만 업데이트하여 효율을 높입니다.
-        inventoryManager.UpdateInventoryUI();
-
-        Debug.Log(recipe.resultItem.itemName + " 제작 성공!");
+    // 아이템 ID로 제작법을 찾는 함수
+    private CraftingRecipe FindRecipeByResultID(int id)
+    {
+        foreach (var recipe in allRecipes)
+        {
+            if (recipe.resultItem.itemID == id)
+            {
+                return recipe;
+            }
+        }
+        return null;
     }
 }
+

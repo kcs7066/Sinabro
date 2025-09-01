@@ -1,24 +1,19 @@
-﻿using UnityEngine;
-using Unity.Netcode;
+﻿using Unity.Netcode;
+using UnityEngine;
 
 public class PlayerController : NetworkBehaviour
 {
     public static PlayerController LocalInstance { get; private set; }
 
-    public float moveSpeed = 5f;
-    public float interactionDistance = 1.5f;
+    [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] public float interactionDistance = 1.5f;
 
     private Rigidbody2D rb;
-    private Vector2 movementInput;
-    private PlayerEquipment playerEquipment;
-    private TileManager tileManager; // TileManager 참조
+    private Vector2 clientInput;
 
     public override void OnNetworkSpawn()
     {
         rb = GetComponent<Rigidbody2D>();
-        playerEquipment = GetComponent<PlayerEquipment>();
-        tileManager = FindObjectOfType<TileManager>(); // 씬에서 TileManager를 찾습니다.
-
         if (IsOwner)
         {
             LocalInstance = this;
@@ -29,60 +24,69 @@ public class PlayerController : NetworkBehaviour
     {
         if (!IsOwner) return;
 
-        movementInput.x = Input.GetAxisRaw("Horizontal");
-        movementInput.y = Input.GetAxisRaw("Vertical");
+        clientInput.x = Input.GetAxisRaw("Horizontal");
+        clientInput.y = Input.GetAxisRaw("Vertical");
+
+        MoveServerRpc(clientInput);
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            RequestTileDamageServerRpc(mouseWorldPos);
+        }
 
         if (Input.GetKeyDown(KeyCode.E))
         {
             Interact();
-        }
-
-        // 마우스 클릭으로 타일 파괴를 요청합니다.
-        if (Input.GetMouseButtonDown(0))
-        {
-            tileManager.RequestDamageTile(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-        }
-    }
-
-    void FixedUpdate()
-    {
-        if (!IsOwner) return;
-        MoveServerRpc(movementInput);
-    }
-
-    private void Interact()
-    {
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, interactionDistance);
-
-        foreach (Collider2D collider in colliders)
-        {
-            if (collider.TryGetComponent<HungrySlime>(out HungrySlime slime))
-            {
-                ItemData heldItem = playerEquipment.equippedItemSlot?.itemData;
-                int heldItemID = (heldItem != null) ? heldItem.itemID : -1;
-
-                FeedSlimeServerRpc(slime.GetComponent<NetworkObject>().NetworkObjectId, heldItemID);
-                break;
-            }
         }
     }
 
     [ServerRpc]
     private void MoveServerRpc(Vector2 input)
     {
-        rb.linearVelocity = input.normalized * moveSpeed;
+        Vector2 moveVelocity = input.normalized * moveSpeed;
+        rb.linearVelocity = moveVelocity;
     }
 
-    [ServerRpc(RequireOwnership = false)]
+    // ## 수정: ServerRpcParams를 받아 요청을 보낸 클라이언트의 ID를 전달합니다. ##
+    [ServerRpc]
+    private void RequestTileDamageServerRpc(Vector3 worldPosition, ServerRpcParams rpcParams = default)
+    {
+        // 서버에 있는 TileManager를 찾아, 요청을 보낸 클라이언트의 ID와 함께 타일 파괴 처리를 요청합니다.
+        FindFirstObjectByType<TileManager>()?.ProcessTileDamage(worldPosition, rpcParams.Receive.SenderClientId);
+    }
+
+    void Interact()
+    {
+        if (!IsOwner) return;
+
+        PlayerEquipment playerEquipment = GetComponent<PlayerEquipment>();
+        if (playerEquipment == null || playerEquipment.equippedItemSlot.itemID == 0) return;
+
+        int heldItemID = playerEquipment.equippedItemSlot.itemID;
+
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, interactionDistance);
+        foreach (var hit in hits)
+        {
+            if (hit.TryGetComponent<HungrySlime>(out var slime))
+            {
+                FeedSlimeServerRpc(slime.NetworkObjectId, heldItemID);
+                return;
+            }
+        }
+    }
+
+    [ServerRpc]
     private void FeedSlimeServerRpc(ulong slimeNetworkId, int heldItemID)
     {
-        if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(slimeNetworkId, out NetworkObject slimeObject))
+        if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(slimeNetworkId, out var slimeObject))
         {
-            if (slimeObject.TryGetComponent<HungrySlime>(out HungrySlime slime))
+            if (slimeObject.TryGetComponent<HungrySlime>(out var slime))
             {
-                ItemData itemToFeed = ItemDatabase.Instance.GetItemById(heldItemID);
-                slime.FeedItem(itemToFeed);
+                ItemData heldItem = ItemDatabase.Instance.GetItemById(heldItemID);
+                slime.FeedItem(heldItem);
             }
         }
     }
 }
+

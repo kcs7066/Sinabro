@@ -1,28 +1,36 @@
-﻿using UnityEngine;
+﻿using Unity.Netcode;
+using UnityEngine;
 
 // 이 스크립트는 플레이어가 현재 장착/손에 든 아이템을 관리합니다.
-public class PlayerEquipment : MonoBehaviour
+public class PlayerEquipment : NetworkBehaviour
 {
-    // 현재 손에 들고 있는 아이템 슬롯 정보
+    // InventorySlot은 이제 struct이므로 null이 될 수 없습니다.
+    // 비어있는 상태는 itemID가 0인 것으로 판단합니다.
     public InventorySlot equippedItemSlot;
 
-    // 유니티 에디터에서 연결할, 손에 든 아이템을 표시할 Sprite Renderer
+    // "Hand" 자식 오브젝트의 SpriteRenderer를 연결할 변수입니다.
     public SpriteRenderer handSpriteRenderer;
 
     // 인벤토리 슬롯의 아이템을 장착하는 함수
     public void EquipItem(InventorySlot slot)
     {
-        // --- 수정된 부분 ---
-        // 이제 아이템 타입과 상관없이 모든 아이템을 손에 들 수 있습니다.
-        if (slot != null && slot.itemData != null)
+        // 아이템 ID가 0보다 크면 유효한 아이템으로 간주합니다.
+        if (slot.itemID > 0)
         {
             equippedItemSlot = slot;
-            handSpriteRenderer.sprite = slot.itemData.itemIcon;
-            Debug.Log(slot.itemData.itemName + " 손에 듦!");
+            ItemData data = ItemDatabase.Instance.GetItemById(slot.itemID);
+            if (data != null)
+            {
+                Debug.Log(data.itemName + " 장착!");
+                if (handSpriteRenderer != null)
+                {
+                    handSpriteRenderer.sprite = data.itemIcon;
+                }
+            }
         }
         else
         {
-            // 빈 슬롯이면 장착을 해제합니다.
+            // 유효하지 않은 아이템이면 장착을 해제합니다.
             UnequipItem();
         }
     }
@@ -30,21 +38,31 @@ public class PlayerEquipment : MonoBehaviour
     // 아이템 장착을 해제하는 함수
     public void UnequipItem()
     {
-        equippedItemSlot = null;
-        handSpriteRenderer.sprite = null;
-        Debug.Log("손 비움");
+        // null 대신 비어있는 새 struct를 할당합니다.
+        equippedItemSlot = new InventorySlot();
+        if (handSpriteRenderer != null)
+        {
+            handSpriteRenderer.sprite = null;
+        }
+        Debug.Log("장착 해제됨");
     }
 
-    // 현재 손에 든 도구의 채집 능력을 반환하는 함수
+    // 현재 장착한 도구의 채집 능력을 반환하는 함수
     public int GetCurrentToolPower()
     {
-        // 손에 든 아이템이 없거나, 아이템이 도구가 아니라면 기본 채집 능력(맨손)인 1을 반환합니다.
-        if (equippedItemSlot == null || equippedItemSlot.itemData == null || equippedItemSlot.itemData.itemType != ItemType.Tool)
+        // itemID가 0 이하면 비어있는 슬롯(맨손)으로 간주합니다.
+        if (equippedItemSlot.itemID <= 0)
         {
             return 1; // 맨손
         }
 
-        // 손에 든 아이템이 도구라면, 해당 도구의 gatheringPower를 반환합니다.
-        return equippedItemSlot.itemData.gatheringPower;
+        ItemData data = ItemDatabase.Instance.GetItemById(equippedItemSlot.itemID);
+        if (data != null && data.itemType == ItemType.Tool)
+        {
+            return data.gatheringPower;
+        }
+
+        return 1; // 맨손
     }
 }
+

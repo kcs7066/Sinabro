@@ -1,99 +1,124 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
+using Unity.Netcode;
 
-// 이 스크립트는 퀵슬롯 UI와 장착 시스템을 관리합니다.
 public class QuickSlotManager : MonoBehaviour
 {
-    public InventoryManager inventoryManager;
-    // public PlayerEquipment playerEquipment; // Inspector 연결을 제거합니다.
-    private PlayerEquipment playerEquipment; // 스크립트가 직접 찾을 변수입니다.
+    private PlayerInventory localPlayerInventory;
+    private PlayerEquipment localPlayerEquipment;
     public GameObject quickSlotPanel;
+    public Color highlightColor = Color.yellow;
 
     private List<InventorySlotUI> quickSlotUIs = new List<InventorySlotUI>();
-    private int selectedSlotIndex = 0;
+    private List<Image> quickSlotBackgrounds = new List<Image>();
+    private int selectedSlotIndex = -1;
 
     void Start()
     {
         quickSlotUIs.AddRange(quickSlotPanel.GetComponentsInChildren<InventorySlotUI>());
-        UpdateSelectedSlotVisual();
+        foreach (var slotUI in quickSlotUIs)
+        {
+            quickSlotBackgrounds.Add(slotUI.GetComponent<Image>());
+        }
+        UpdateHighlight(); // 초기 하이라이트 설정
     }
 
     void Update()
     {
-        // --- 추가된 부분 ---
-        // 아직 로컬 플레이어를 찾지 못했다면, 매 프레임마다 찾아봅니다.
-        if (playerEquipment == null && PlayerController.LocalInstance != null)
+        // 로컬 플레이어 인스턴스를 동적으로 찾아 연결합니다.
+        if (localPlayerInventory == null && PlayerInventory.LocalInstance != null)
         {
-            // 찾았다면, 그 플레이어의 PlayerEquipment 컴포넌트를 가져옵니다.
-            playerEquipment = PlayerController.LocalInstance.GetComponent<PlayerEquipment>();
-
-            // 플레이어를 찾은 이 시점에 UI를 한번 동기화하고 초기 아이템을 장착합니다.
-            UpdateAllQuickSlotsUI();
+            localPlayerInventory = PlayerInventory.LocalInstance;
         }
-        // ---
+        if (localPlayerEquipment == null && PlayerInventory.LocalInstance != null)
+        {
+            if (PlayerInventory.LocalInstance.TryGetComponent<PlayerEquipment>(out var equipment))
+            {
+                localPlayerEquipment = equipment;
+            }
+        }
 
-        // 플레이어를 찾지 못했다면 키 입력을 받지 않습니다.
-        if (playerEquipment == null) return;
+        // 플레이어를 찾은 후에만 입력을 처리합니다.
+        if (localPlayerInventory == null || localPlayerEquipment == null) return;
 
-        for (int i = 0; i < quickSlotUIs.Count; i++)
+        // 숫자 키 입력으로 슬롯을 선택합니다.
+        for (int i = 0; i < 5; i++)
         {
             if (Input.GetKeyDown(KeyCode.Alpha1 + i))
             {
-                selectedSlotIndex = i;
-                UpdateSelectedSlotVisual();
-                EquipItemFromSlot(selectedSlotIndex);
+                SelectSlot(i);
                 break;
             }
         }
     }
 
+    // InventoryManager가 호출하여 퀵슬롯 UI를 새로고침합니다.
     public void UpdateAllQuickSlotsUI()
     {
-        // 플레이어를 찾지 못했다면 UI 업데이트를 하지 않습니다.
-        if (playerEquipment == null) return;
+        if (localPlayerInventory == null) return;
 
         for (int i = 0; i < quickSlotUIs.Count; i++)
         {
-            if (i < inventoryManager.inventorySlots.Count)
+            if (i < localPlayerInventory.inventorySlots.Count)
             {
-                quickSlotUIs[i].UpdateSlot(inventoryManager.inventorySlots[i]);
+                ItemData itemData = ItemDatabase.Instance.GetItemById(localPlayerInventory.inventorySlots[i].itemID);
+                if (itemData != null)
+                {
+                    quickSlotUIs[i].UpdateSlot(itemData, localPlayerInventory.inventorySlots[i].quantity);
+                }
             }
             else
             {
                 quickSlotUIs[i].ClearSlot();
             }
         }
-        EquipItemFromSlot(selectedSlotIndex);
+
+        // 인벤토리 변경으로 인해 현재 장착한 아이템 정보가 바뀌었을 수 있으므로, 장착 상태를 다시 확인합니다.
+        EquipItemFromSelectedSlot();
     }
 
-    void UpdateSelectedSlotVisual()
+    // 특정 슬롯을 선택하는 함수
+    void SelectSlot(int slotIndex)
     {
-        for (int i = 0; i < quickSlotUIs.Count; i++)
+        // 이미 선택된 슬롯을 다시 누르면 선택을 해제합니다.
+        if (selectedSlotIndex == slotIndex)
         {
-            if (i == selectedSlotIndex)
-            {
-                quickSlotUIs[i].GetComponent<Image>().color = Color.yellow;
-            }
-            else
-            {
-                quickSlotUIs[i].GetComponent<Image>().color = Color.white;
-            }
-        }
-    }
-
-    void EquipItemFromSlot(int slotIndex)
-    {
-        if (playerEquipment == null) return;
-
-        if (slotIndex < inventoryManager.inventorySlots.Count)
-        {
-            InventorySlot slotToEquip = inventoryManager.inventorySlots[slotIndex];
-            playerEquipment.EquipItem(slotToEquip);
+            selectedSlotIndex = -1;
         }
         else
         {
-            playerEquipment.UnequipItem();
+            selectedSlotIndex = slotIndex;
+        }
+
+        EquipItemFromSelectedSlot();
+        UpdateHighlight();
+    }
+
+    // 현재 선택된 슬롯의 아이템을 장착하는 함수
+    void EquipItemFromSelectedSlot()
+    {
+        if (localPlayerEquipment == null || localPlayerInventory == null) return;
+
+        // 유효한 슬롯이 선택되었고, 그 슬롯에 아이템이 있다면 장착합니다.
+        if (selectedSlotIndex >= 0 && selectedSlotIndex < localPlayerInventory.inventorySlots.Count)
+        {
+            localPlayerEquipment.EquipItem(localPlayerInventory.inventorySlots[selectedSlotIndex]);
+        }
+        else
+        {
+            // 빈 슬롯이거나 선택이 해제되면 장착을 해제합니다.
+            localPlayerEquipment.UnequipItem();
+        }
+    }
+
+    // 선택된 슬롯에 하이라이트를 표시하는 함수
+    void UpdateHighlight()
+    {
+        for (int i = 0; i < quickSlotBackgrounds.Count; i++)
+        {
+            quickSlotBackgrounds[i].color = (i == selectedSlotIndex) ? highlightColor : Color.white;
         }
     }
 }
+

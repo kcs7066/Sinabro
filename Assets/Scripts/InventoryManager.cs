@@ -1,146 +1,111 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-
-// 이 클래스는 인벤토리의 한 칸(슬롯)에 들어갈 정보를 담습니다.
-[System.Serializable]
-public class InventorySlot
-{
-    public ItemData itemData;
-    public int quantity;
-
-    public InventorySlot(ItemData data, int amount)
-    {
-        itemData = data;
-        quantity = amount;
-    }
-
-    public void AddQuantity(int amount)
-    {
-        quantity += amount;
-    }
-
-    public void RemoveQuantity(int amount)
-    {
-        quantity -= amount;
-    }
-}
+using Unity.Netcode;
 
 public class InventoryManager : MonoBehaviour
 {
-    [Header("테스트용 아이템")]
-    public ItemData testMushroom;
-    public ItemData testAxe;
-
-    public List<InventorySlot> inventorySlots = new List<InventorySlot>();
-
     public GameObject inventoryPanel;
     public QuickSlotManager quickSlotManager;
-
+    private PlayerInventory localPlayerInventory;
     private List<InventorySlotUI> slotUIs = new List<InventorySlotUI>();
     private bool isInventoryOpen = false;
 
     void Start()
     {
         slotUIs.AddRange(inventoryPanel.GetComponentsInChildren<InventorySlotUI>());
-        UpdateInventoryUI();
+        Debug.Log($"[InventoryManager] Found {slotUIs.Count} UI slots in the inventory panel.");
+
         inventoryPanel.SetActive(false);
+        PlayerInventory.OnLocalInstanceReady += OnLocalInventoryReady;
+
+        if (PlayerInventory.LocalInstance != null)
+        {
+            OnLocalInventoryReady(PlayerInventory.LocalInstance);
+        }
+    }
+
+    private void OnLocalInventoryReady(PlayerInventory inventory)
+    {
+        if (localPlayerInventory != null) return;
+
+        localPlayerInventory = inventory;
+        Debug.Log("[Client] InventoryManager received LocalPlayerInventory via event. Subscribing to OnListChanged event.");
+        localPlayerInventory.inventorySlots.OnListChanged += OnInventoryChanged;
+
+        // ## 추가: 타이밍 문제를 해결하기 위한 지연된 UI 업데이트 ##
+        StartCoroutine(DelayedUIUpdate());
+    }
+
+    private void OnDestroy()
+    {
+        PlayerInventory.OnLocalInstanceReady -= OnLocalInventoryReady;
+        if (localPlayerInventory != null)
+        {
+            localPlayerInventory.inventorySlots.OnListChanged -= OnInventoryChanged;
+        }
     }
 
     void Update()
     {
+        if (localPlayerInventory == null) return;
+
         if (Input.GetKeyDown(KeyCode.I))
         {
             isInventoryOpen = !isInventoryOpen;
             inventoryPanel.SetActive(isInventoryOpen);
         }
-
-        // 테스트용 키 입력: 숫자 키 8을 누르면 버섯 획득
-        if (Input.GetKeyDown(KeyCode.Alpha8))
-        {
-            if (testMushroom != null) AddItem(testMushroom, 1);
-        }
-
-        // 테스트용 키 입력: 숫자 키 9를 누르면 도끼 획득
-        if (Input.GetKeyDown(KeyCode.Alpha9))
-        {
-            if (testAxe != null) AddItem(testAxe, 1);
-        }
     }
 
-    public void UpdateInventoryUI()
+    private void OnInventoryChanged(NetworkListEvent<InventorySlot> changeEvent)
     {
-        for (int i = 0; i < slotUIs.Count; i++)
-        {
-            if (i < inventorySlots.Count)
-            {
-                slotUIs[i].UpdateSlot(inventorySlots[i]);
-            }
-            else
-            {
-                slotUIs[i].ClearSlot();
-            }
-        }
+        Debug.Log($"[Client] OnInventoryChanged event received! Type: {changeEvent.Type}, Index: {changeEvent.Index}");
+        UpdateAllUIs();
+    }
 
+    private void UpdateAllUIs()
+    {
+        UpdateInventoryPanelUI();
         if (quickSlotManager != null)
         {
             quickSlotManager.UpdateAllQuickSlotsUI();
         }
     }
 
-    // 이제 updateUI 매개변수를 받습니다.
-    public void AddItem(ItemData itemData, int amount, bool updateUI = true)
+    // ## 추가: 지연된 UI 업데이트를 위한 코루틴 ##
+    private IEnumerator DelayedUIUpdate()
     {
-        bool itemExists = false;
-        foreach (InventorySlot slot in inventorySlots)
-        {
-            if (slot.itemData == itemData)
-            {
-                slot.AddQuantity(amount);
-                itemExists = true;
-                break;
-            }
-        }
-        if (!itemExists)
-        {
-            inventorySlots.Add(new InventorySlot(itemData, amount));
-        }
-
-        if (updateUI) UpdateInventoryUI();
+        // 0.1초 대기 후 UI를 업데이트하여 동기화 문제를 방지합니다.
+        yield return new WaitForSeconds(0.1f);
+        Debug.Log("[InventoryManager] Performing delayed UI update.");
+        UpdateAllUIs();
     }
 
-    // 이제 updateUI 매개변수를 받습니다.
-    public void RemoveItem(ItemData itemData, int amount, bool updateUI = true)
+    public void UpdateInventoryPanelUI()
     {
-        InventorySlot slotToRemove = null;
-        foreach (InventorySlot slot in inventorySlots)
+        if (localPlayerInventory == null) return;
+
+        Debug.Log($"[Client] Updating Inventory UI. Found {localPlayerInventory.inventorySlots.Count} items.");
+
+        for (int i = 0; i < slotUIs.Count; i++)
         {
-            if (slot.itemData == itemData)
+            if (i < localPlayerInventory.inventorySlots.Count)
             {
-                slot.RemoveQuantity(amount);
-                if (slot.quantity <= 0)
+                ItemData itemData = ItemDatabase.Instance.GetItemById(localPlayerInventory.inventorySlots[i].itemID);
+                if (itemData != null)
                 {
-                    slotToRemove = slot;
+                    slotUIs[i].UpdateSlot(itemData, localPlayerInventory.inventorySlots[i].quantity);
                 }
-                break;
+                else
+                {
+                    slotUIs[i].ClearSlot();
+                }
             }
-        }
-        if (slotToRemove != null)
-        {
-            inventorySlots.Remove(slotToRemove);
-        }
-
-        if (updateUI) UpdateInventoryUI();
-    }
-
-    public int GetItemQuantity(ItemData itemData)
-    {
-        foreach (InventorySlot slot in inventorySlots)
-        {
-            if (slot.itemData == itemData)
+            else
             {
-                return slot.quantity;
+                slotUIs[i].ClearSlot();
             }
         }
-        return 0;
     }
 }
+

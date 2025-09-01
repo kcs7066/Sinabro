@@ -1471,7 +1471,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1250542279
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2702,7 +2702,6 @@ GameObject:
   - component: {fileID: 1700885776}
   - component: {fileID: 1700885773}
   - component: {fileID: 1700885768}
-  - component: {fileID: 1700885769}
   - component: {fileID: 1700885770}
   - component: {fileID: 1700885772}
   - component: {fileID: 1700885775}
@@ -2740,29 +2739,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b3230ed0d617a64592ecf54bf25bdc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  testMushroom: {fileID: 11400000, guid: 6471184f6cdfc2e45b7e32817a8712df, type: 2}
-  testAxe: {fileID: 11400000, guid: c446fa8a41d3b264ea465cc2634fb3c2, type: 2}
-  inventorySlots: []
   inventoryPanel: {fileID: 26559375}
   quickSlotManager: {fileID: 1700885770}
---- !u!114 &1700885769
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1700885765}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7a1e203cd3f8e6549bcb3016f81f2cd8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  inventoryManager: {fileID: 1700885768}
-  allRecipes:
-  - {fileID: 11400000, guid: 0f7cf02c3743e4b43902e99c4087f8b2, type: 2}
-  craftingPanel: {fileID: 1250542278}
-  recipeSlotParent: {fileID: 1250542279}
-  recipeSlotPrefab: {fileID: 2631852479312415170, guid: 8f1304e9fc30dc34e9299d380c4f2566, type: 3}
 --- !u!114 &1700885770
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2775,8 +2753,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8cbc8bc83a49d514e8c9688febaec056, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inventoryManager: {fileID: 1700885768}
   quickSlotPanel: {fileID: 853536385}
+  highlightColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!114 &1700885772
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2885,6 +2863,82 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 628758793453542803, guid: 375c39d110e4c1e4fbf03057711912eb, type: 3}
   m_PrefabInstance: {fileID: 1597362609}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1716840089
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1716840092}
+  - component: {fileID: 1716840090}
+  - component: {fileID: 1716840091}
+  m_Layer: 0
+  m_Name: GameSystems
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1716840090
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1716840089}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 3527666399
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 0
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
+--- !u!114 &1716840091
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1716840089}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a1e203cd3f8e6549bcb3016f81f2cd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  allRecipes:
+  - {fileID: 11400000, guid: 0f7cf02c3743e4b43902e99c4087f8b2, type: 2}
+  craftingPanel: {fileID: 1250542278}
+  recipeSlotPrefab: {fileID: 2631852479312415170, guid: 8f1304e9fc30dc34e9299d380c4f2566, type: 3}
+  recipeSlotParent: {fileID: 1250542279}
+--- !u!4 &1716840092
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1716840089}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!224 &1838687048 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 628758793453542803, guid: 375c39d110e4c1e4fbf03057711912eb, type: 3}
@@ -2980,7 +3034,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  player: {fileID: 4566897386070464375, guid: 61d98f26cbe2e8242b9d448569b1e0e3, type: 3}
   chunkSize: 16
   viewDistance: 1
   chunkPrefab: {fileID: 5978004861392373540, guid: 6102f7f70a2d1f2409e36e0b4199ad5e, type: 3}
@@ -3202,3 +3255,4 @@ SceneRoots:
   - {fileID: 967380719}
   - {fileID: 309950627}
   - {fileID: 1900385881}
+  - {fileID: 1716840092}
