@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
-using Unity.Netcode;
 using UnityEngine;
+using Unity.Netcode;
 using UnityEngine.Tilemaps;
 
 public class WorldManager : NetworkBehaviour
 {
     [Header("월드 설정")]
-    private Transform localPlayerTransform;
     public int chunkSize = 16;
     public int viewDistance = 1;
 
@@ -22,54 +21,108 @@ public class WorldManager : NetworkBehaviour
     public float objectThreshold = 0.7f;
 
     private Dictionary<Vector2Int, GameObject> activeChunks = new Dictionary<Vector2Int, GameObject>();
-    private Vector2Int lastPlayerChunkPosition;
+    private Dictionary<ulong, Vector2Int> playerChunkPositions = new Dictionary<ulong, Vector2Int>();
+
+    private HashSet<Vector2Int> unlockedChunks = new HashSet<Vector2Int>();
+
+    // ## 추가: 서버가 종료 중인지 확인하는 보다 안정적인 플래그 ##
+    private bool isShuttingDown = false;
+
+    public override void OnNetworkSpawn()
+    {
+        if (IsServer)
+        {
+            NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
+            NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnect;
+
+            // ## 추가: 서버가 멈출 때 isShuttingDown 플래그를 true로 설정합니다. ##
+            NetworkManager.Singleton.OnServerStopped += (bool _) => { isShuttingDown = true; };
+
+            unlockedChunks.Add(Vector2Int.zero);
+
+            foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
+            {
+                OnClientConnected(client.ClientId);
+            }
+        }
+    }
 
     void Update()
     {
-        if (!IsServer) return;
+        // ## 수정: isShuttingDown 플래그를 확인합니다. ##
+        if (!IsServer || isShuttingDown) return;
 
-        if (localPlayerTransform == null)
+        foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
         {
-            if (PlayerController.LocalInstance != null)
+            if (client.PlayerObject == null) continue;
+
+            Vector2Int currentPlayerChunkPos = GetChunkPositionFromWorld(client.PlayerObject.transform.position);
+            playerChunkPositions.TryGetValue(client.ClientId, out Vector2Int lastPlayerChunkPos);
+
+            if (currentPlayerChunkPos != lastPlayerChunkPos)
             {
-                localPlayerTransform = PlayerController.LocalInstance.transform;
+                playerChunkPositions[client.ClientId] = currentPlayerChunkPos;
                 UpdateChunks();
             }
-            return;
         }
+    }
 
-        Vector2Int currentPlayerChunkPosition = GetChunkPositionFromWorld(localPlayerTransform.position);
-        if (currentPlayerChunkPosition != lastPlayerChunkPosition)
+    public void UnlockChunkAt(Vector3 altarWorldPosition, Vector2Int offset)
+    {
+        if (!IsServer) return;
+
+        Vector2Int altarChunkPos = GetChunkPositionFromWorld(altarWorldPosition);
+        Vector2Int chunkToUnlockPos = altarChunkPos + offset;
+
+        if (unlockedChunks.Add(chunkToUnlockPos))
         {
+            Debug.Log($"[Server] Chunk at {chunkToUnlockPos} has been unlocked.");
             UpdateChunks();
         }
     }
 
+    private void OnClientConnected(ulong clientId)
+    {
+        Debug.Log($"Player {clientId} connected. Initializing chunk position.");
+        playerChunkPositions[clientId] = new Vector2Int(int.MaxValue, int.MaxValue);
+    }
+
+    private void OnClientDisconnect(ulong clientId)
+    {
+        // ## 수정: isShuttingDown 플래그를 확인합니다. ##
+        if (isShuttingDown) return;
+
+        Debug.Log($"Player {clientId} disconnected. Removing from chunk tracking.");
+        playerChunkPositions.Remove(clientId);
+        UpdateChunks();
+    }
+
     void UpdateChunks()
     {
-        if (localPlayerTransform == null) return;
-
-        lastPlayerChunkPosition = GetChunkPositionFromWorld(localPlayerTransform.position);
-
-        for (int x = -viewDistance; x <= viewDistance; x++)
+        HashSet<Vector2Int> requiredChunks = new HashSet<Vector2Int>();
+        foreach (var playerPos in playerChunkPositions.Values)
         {
-            for (int y = -viewDistance; y <= viewDistance; y++)
+            for (int x = -viewDistance; x <= viewDistance; x++)
             {
-                Vector2Int chunkPos = new Vector2Int(lastPlayerChunkPosition.x + x, lastPlayerChunkPosition.y + y);
-                if (!activeChunks.ContainsKey(chunkPos))
+                for (int y = -viewDistance; y <= viewDistance; y++)
                 {
-                    LoadChunk(chunkPos);
+                    requiredChunks.Add(new Vector2Int(playerPos.x + x, playerPos.y + y));
                 }
+            }
+        }
+
+        foreach (var chunkPos in requiredChunks)
+        {
+            if (unlockedChunks.Contains(chunkPos) && !activeChunks.ContainsKey(chunkPos))
+            {
+                LoadChunk(chunkPos);
             }
         }
 
         List<Vector2Int> chunksToUnload = new List<Vector2Int>();
         foreach (var chunk in activeChunks)
         {
-            int distanceX = Mathf.Abs(chunk.Key.x - lastPlayerChunkPosition.x);
-            int distanceY = Mathf.Abs(chunk.Key.y - lastPlayerChunkPosition.y);
-
-            if (distanceX > viewDistance || distanceY > viewDistance)
+            if (!requiredChunks.Contains(chunk.Key) || !unlockedChunks.Contains(chunk.Key))
             {
                 chunksToUnload.Add(chunk.Key);
             }
@@ -83,12 +136,10 @@ public class WorldManager : NetworkBehaviour
 
     void LoadChunk(Vector2Int chunkPosition)
     {
-        // 1. 청크 오브젝트를 인스턴스화합니다.
         Vector3 worldPosition = new Vector3(chunkPosition.x * chunkSize, chunkPosition.y * chunkSize, 0);
         GameObject newChunk = Instantiate(chunkPrefab, worldPosition, Quaternion.identity, this.transform);
         newChunk.name = $"Chunk ({chunkPosition.x}, {chunkPosition.y})";
 
-        // 2. 서버에서만 지형 데이터를 생성합니다.
         List<Vector3Int> groundPositions = new List<Vector3Int>();
         List<Vector3Int> objectPositions = new List<Vector3Int>();
 
@@ -108,12 +159,9 @@ public class WorldManager : NetworkBehaviour
             }
         }
 
-        // 3. 청크를 네트워크에 스폰합니다.
         NetworkObject chunkNetworkObject = newChunk.GetComponent<NetworkObject>();
         chunkNetworkObject.Spawn();
 
-        // 4. 스폰된 청크의 ChunkData 컴포넌트에 지형 데이터를 설정합니다.
-        // 이 데이터는 NetworkVariable을 통해 클라이언트로 자동 동기화됩니다.
         ChunkData chunkData = newChunk.GetComponent<ChunkData>();
         if (chunkData != null)
         {
@@ -131,7 +179,14 @@ public class WorldManager : NetworkBehaviour
     {
         if (activeChunks.TryGetValue(chunkPosition, out GameObject chunkToDestroy))
         {
-            chunkToDestroy.GetComponent<NetworkObject>().Despawn(); // Despawn()이 Destroy()를 처리합니다.
+            if (chunkToDestroy != null && chunkToDestroy.TryGetComponent<NetworkObject>(out var netObj) && netObj.IsSpawned)
+            {
+                netObj.Despawn();
+            }
+            else if (chunkToDestroy != null)
+            {
+                Destroy(chunkToDestroy);
+            }
             activeChunks.Remove(chunkPosition);
         }
     }

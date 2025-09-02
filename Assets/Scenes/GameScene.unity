@@ -3245,6 +3245,87 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 375c39d110e4c1e4fbf03057711912eb, type: 3}
+--- !u!1001 &2156667947714938821
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 745667855717712091, guid: 2c89deb43d07fb248a3509be28b901ea, type: 3}
+      propertyPath: m_Color.b
+      value: 0.6603774
+      objectReference: {fileID: 0}
+    - target: {fileID: 745667855717712091, guid: 2c89deb43d07fb248a3509be28b901ea, type: 3}
+      propertyPath: m_Color.g
+      value: 0.17755428
+      objectReference: {fileID: 0}
+    - target: {fileID: 745667855717712091, guid: 2c89deb43d07fb248a3509be28b901ea, type: 3}
+      propertyPath: m_Color.r
+      value: 0.18152158
+      objectReference: {fileID: 0}
+    - target: {fileID: 745667855717712091, guid: 2c89deb43d07fb248a3509be28b901ea, type: 3}
+      propertyPath: m_SortingOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3072181214554864103, guid: 2c89deb43d07fb248a3509be28b901ea, type: 3}
+      propertyPath: m_Name
+      value: 'UnlockAltar '
+      objectReference: {fileID: 0}
+    - target: {fileID: 8509800012193069103, guid: 2c89deb43d07fb248a3509be28b901ea, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8509800012193069103, guid: 2c89deb43d07fb248a3509be28b901ea, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8509800012193069103, guid: 2c89deb43d07fb248a3509be28b901ea, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8509800012193069103, guid: 2c89deb43d07fb248a3509be28b901ea, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8509800012193069103, guid: 2c89deb43d07fb248a3509be28b901ea, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8509800012193069103, guid: 2c89deb43d07fb248a3509be28b901ea, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8509800012193069103, guid: 2c89deb43d07fb248a3509be28b901ea, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8509800012193069103, guid: 2c89deb43d07fb248a3509be28b901ea, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8509800012193069103, guid: 2c89deb43d07fb248a3509be28b901ea, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8509800012193069103, guid: 2c89deb43d07fb248a3509be28b901ea, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9061949987182193815, guid: 2c89deb43d07fb248a3509be28b901ea, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 2697663742
+      objectReference: {fileID: 0}
+    - target: {fileID: 9061949987182193815, guid: 2c89deb43d07fb248a3509be28b901ea, type: 3}
+      propertyPath: InScenePlacedSourceGlobalObjectIdHash
+      value: 2281360268
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2c89deb43d07fb248a3509be28b901ea, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -3256,3 +3337,4 @@ SceneRoots:
   - {fileID: 309950627}
   - {fileID: 1900385881}
   - {fileID: 1716840092}
+  - {fileID: 2156667947714938821}
