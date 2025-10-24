@@ -211,6 +211,8 @@ MonoBehaviour:
   interactionDistance: 3
   testMushroom: {fileID: 11400000, guid: 6471184f6cdfc2e45b7e32817a8712df, type: 2}
   testAxe: {fileID: 11400000, guid: c446fa8a41d3b264ea465cc2634fb3c2, type: 2}
+  unlockPanel: {fileID: 0}
+  unlockButton: {fileID: 0}
 --- !u!114 &-5525075862975100662
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -346,4 +348,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.Components.NetworkAnimator
   ShowTopMostFoldoutHeaderGroup: 1
   TransitionStateInfoList: []
-  m_Animator: {fileID: -1444159927580290681, guid: 61d98f26cbe2e8242b9d448569b1e0e3, type: 3}
+  m_Animator: {fileID: 2379299878027763810}

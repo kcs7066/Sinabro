@@ -1,5 +1,6 @@
 ﻿using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.UI; // UI.Button을 사용하기 위해 반드시 필요합니다.
 
 public class PlayerController : NetworkBehaviour
 {
@@ -13,8 +14,14 @@ public class PlayerController : NetworkBehaviour
     public ItemData testMushroom;
     public ItemData testAxe;
 
+    [Header("UI References")]
+    public GameObject unlockPanel; // Inspector에서 연결할 해금 UI 패널
+    public Button unlockButton; // Inspector에서 연결할 해금 버튼
+
     private Rigidbody2D rb;
     private Vector2 clientInput;
+    private WorldManager worldManager;
+    private string targetLandIdToUnlock;
 
     public override void OnNetworkSpawn()
     {
@@ -22,6 +29,23 @@ public class PlayerController : NetworkBehaviour
         if (IsOwner)
         {
             LocalInstance = this;
+            worldManager = FindFirstObjectByType<WorldManager>();
+
+            // UI 연결 및 초기화
+            if (unlockButton != null)
+            {
+                unlockButton.onClick.AddListener(OnUnlockButtonPressed);
+            }
+            if (unlockPanel != null)
+            {
+                unlockPanel.SetActive(false);
+            }
+        }
+
+        // 플레이어 시작 위치 설정 (서버에서만 실행)
+        if (IsServer && worldManager != null)
+        {
+            transform.position = new Vector3(worldManager.chunkSize / 2f, worldManager.chunkSize / 2f, 0);
         }
     }
 
@@ -29,6 +53,7 @@ public class PlayerController : NetworkBehaviour
     {
         if (!IsOwner) return;
 
+        // --- Input Reading ---
         clientInput.x = Input.GetAxisRaw("Horizontal");
         clientInput.y = Input.GetAxisRaw("Vertical");
 
@@ -45,6 +70,12 @@ public class PlayerController : NetworkBehaviour
             Interact();
         }
 
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            CheckForUnlockableLand();
+        }
+
+        // --- Test Item Cheats ---
         if (Input.GetKeyDown(KeyCode.Alpha8))
         {
             if (testMushroom != null)
@@ -61,6 +92,7 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
+    // --- Server RPCs ---
     [ServerRpc]
     private void MoveServerRpc(Vector2 input)
     {
@@ -83,6 +115,48 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
+    [ServerRpc]
+    private void FeedSlimeServerRpc(ulong slimeNetworkId, int heldItemID, ServerRpcParams rpcParams = default)
+    {
+        if (!NetworkManager.Singleton.ConnectedClients.TryGetValue(rpcParams.Receive.SenderClientId, out var client)) return;
+        if (!client.PlayerObject.TryGetComponent<PlayerInventory>(out var playerInventory)) return;
+        if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(slimeNetworkId, out var slimeObject)) return;
+
+        if (slimeObject.TryGetComponent<HungrySlime>(out var slime))
+        {
+            ItemData heldItem = ItemDatabase.Instance.GetItemById(heldItemID);
+            if (heldItem != null && slime.requiredItem != null && heldItem.itemID == slime.requiredItem.itemID)
+            {
+                playerInventory.RemoveItem(heldItemID, 1);
+                if (slime.dropItem != null)
+                {
+                    playerInventory.AddItem(slime.dropItem.itemID, 1);
+                }
+                slime.FeedItem(heldItem);
+            }
+        }
+    }
+
+    [ServerRpc]
+    private void UnlockAltarServerRpc(ulong altarNetworkId, ServerRpcParams rpcParams = default)
+    {
+        if (!NetworkManager.Singleton.ConnectedClients.TryGetValue(rpcParams.Receive.SenderClientId, out var client)) return;
+        if (!client.PlayerObject.TryGetComponent<PlayerInventory>(out var playerInventory)) return;
+        if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(altarNetworkId, out var altarObject)) return;
+
+        if (altarObject.TryGetComponent<UnlockAltar>(out var altar))
+        {
+            altar.AttemptUnlock(playerInventory);
+        }
+    }
+
+    [ServerRpc]
+    private void RequestUnlockLandServerRpc(string landId)
+    {
+        worldManager?.UnlockLand(landId);
+    }
+
+    // --- Local Functions ---
     void Interact()
     {
         if (!IsOwner) return;
@@ -95,8 +169,7 @@ public class PlayerController : NetworkBehaviour
                 PlayerEquipment playerEquipment = GetComponent<PlayerEquipment>();
                 if (playerEquipment != null && playerEquipment.equippedItemSlot.itemID != 0)
                 {
-                    int heldItemID = playerEquipment.equippedItemSlot.itemID;
-                    FeedSlimeServerRpc(slime.NetworkObjectId, heldItemID);
+                    FeedSlimeServerRpc(slime.NetworkObjectId, playerEquipment.equippedItemSlot.itemID);
                     return;
                 }
             }
@@ -108,54 +181,32 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    [ServerRpc]
-    private void FeedSlimeServerRpc(ulong slimeNetworkId, int heldItemID, ServerRpcParams rpcParams = default)
+    private void CheckForUnlockableLand()
     {
-        if (!NetworkManager.Singleton.ConnectedClients.TryGetValue(rpcParams.Receive.SenderClientId, out var client))
-            return;
+        if (worldManager == null) return;
 
-        if (!client.PlayerObject.TryGetComponent<PlayerInventory>(out var playerInventory))
-            return;
+        Vector2Int currentChunk = worldManager.GetChunkPositionFromWorld(transform.position);
+        Vector2Int[] directions = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
 
-        if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(slimeNetworkId, out var slimeObject))
+        foreach (var dir in directions)
         {
-            if (slimeObject.TryGetComponent<HungrySlime>(out var slime))
+            Vector2Int adjacentChunk = currentChunk + dir;
+            string landId = worldManager.GetLandIdAt(adjacentChunk);
+            if (!string.IsNullOrEmpty(landId) && !worldManager.IsLandUnlocked(landId))
             {
-                ItemData heldItem = ItemDatabase.Instance.GetItemById(heldItemID);
-
-                if (heldItem != null && slime.requiredItem != null && heldItem.itemID == slime.requiredItem.itemID)
-                {
-                    // 플레이어의 인벤토리에서 아이템 1개를 먼저 제거합니다.
-                    playerInventory.RemoveItem(heldItemID, 1);
-
-                    // ## 추가: 슬라임이 드랍하는 보상 아이템을 플레이어에게 줍니다. ##
-                    if (slime.dropItem != null)
-                    {
-                        playerInventory.AddItem(slime.dropItem.itemID, 1);
-                    }
-
-                    // 마지막으로 슬라임에게 아이템을 먹입니다. (슬라임이 사라짐)
-                    slime.FeedItem(heldItem);
-                }
+                targetLandIdToUnlock = landId;
+                if (unlockPanel != null) unlockPanel.SetActive(true);
+                return;
             }
         }
     }
 
-    [ServerRpc]
-    private void UnlockAltarServerRpc(ulong altarNetworkId, ServerRpcParams rpcParams = default)
+    private void OnUnlockButtonPressed()
     {
-        if (!NetworkManager.Singleton.ConnectedClients.TryGetValue(rpcParams.Receive.SenderClientId, out var client))
-            return;
-
-        if (!client.PlayerObject.TryGetComponent<PlayerInventory>(out var playerInventory))
-            return;
-
-        if (!NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(altarNetworkId, out var altarObject))
-            return;
-
-        if (altarObject.TryGetComponent<UnlockAltar>(out var altar))
+        if (!string.IsNullOrEmpty(targetLandIdToUnlock))
         {
-            altar.AttemptUnlock(playerInventory);
+            RequestUnlockLandServerRpc(targetLandIdToUnlock);
+            if (unlockPanel != null) unlockPanel.SetActive(false);
         }
     }
 }
